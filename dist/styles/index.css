@@ -1,0 +1,41 @@
+body {
+  margin: 0;
+  padding: 0;
+  background-color: aqua;
+}
+
+.game-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+.game-container .board {
+  display: flex;
+  flex-wrap: wrap;
+  height: 33%;
+  width: 33%;
+}
+.game-container .board .square {
+  display: flex;
+  width: 32%;
+  height: 33%;
+  justify-content: center;
+  align-items: center;
+}
+.game-container .board .full-border {
+  border-right: 2px solid #fff;
+  border-left: 2px solid #fff;
+  border-top: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+}
+.game-container .board .inline-border {
+  border-right: 2px solid #fff;
+  border-left: 2px solid #fff;
+}
+.game-container .board .block-border {
+  border-top: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+}
+
+/*# sourceMappingURL=index.css.map */

@@ -1,0 +1,15 @@
+{
+  "name": "elm-tic-tac-toe",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "elm make src/Main.elm --output dist/elm.js",
+    "sass-dev": "sass --watch --update --style=expanded src/styles:dist/styles",
+    "sass-prod": "sass --no-source-map --style=compressed src/styles:dist/styles"
+
+  },
+  "dependencies": {
+    "sass": "^1.54.0"
+  }
+}
