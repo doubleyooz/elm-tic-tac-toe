@@ -5159,13 +5159,14 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$element = _Browser_element;
+var $author$project$Model$Empty = {$: 'Empty'};
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Main$init = function (_v0) {
 	return _Utils_Tuple2(
 		{
 			board: _List_fromArray(
-				['', '', '', '', '', '', '', '', '']),
+				[$author$project$Model$Empty, $author$project$Model$Empty, $author$project$Model$Empty, $author$project$Model$Empty, $author$project$Model$Empty, $author$project$Model$Empty, $author$project$Model$Empty, $author$project$Model$Empty, $author$project$Model$Empty]),
 			currentPlayer: 1
 		},
 		$elm$core$Platform$Cmd$none);
@@ -5174,6 +5175,9 @@ var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $author$project$Main$subscriptions = function (model) {
 	return $elm$core$Platform$Sub$batch(_List_Nil);
 };
+var $author$project$Model$DoNothing = {$: 'DoNothing'};
+var $author$project$Model$Player1 = {$: 'Player1'};
+var $author$project$Model$Player2 = {$: 'Player2'};
 var $elm$core$List$head = function (list) {
 	if (list.b) {
 		var x = list.a;
@@ -5215,45 +5219,63 @@ var $author$project$Utils$getElementByIndex = F2(
 			}
 		}
 	});
-var $author$project$Model$values = _List_fromArray(
-	['', 'O', 'X']);
 var $author$project$Update$update = F2(
 	function (msg, model) {
-		if (msg.$ === 'DoNothing') {
-			return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-		} else {
-			var id = msg.a;
-			return _Utils_Tuple2(
-				_Utils_update(
-					model,
-					{
-						board: A2(
-							$elm$core$List$indexedMap,
-							F2(
-								function (i, x) {
-									if (_Utils_eq(i, id)) {
-										var _v1 = A2($author$project$Utils$getElementByIndex, $author$project$Model$values, model.currentPlayer);
-										if (_v1.$ === 'Just') {
-											var value = _v1.a;
-											return value;
+		update:
+		while (true) {
+			if (msg.$ === 'DoNothing') {
+				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+			} else {
+				var id = msg.a;
+				var _v1 = A2($author$project$Utils$getElementByIndex, model.board, id);
+				if (_v1.$ === 'Just') {
+					var val = _v1.a;
+					if (val.$ === 'Empty') {
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									board: A2(
+										$elm$core$List$indexedMap,
+										F2(
+											function (i, x) {
+												if (_Utils_eq(i, id)) {
+													var _v3 = model.currentPlayer;
+													if (_v3 === 1) {
+														return $author$project$Model$Player1;
+													} else {
+														return $author$project$Model$Player2;
+													}
+												} else {
+													return x;
+												}
+											}),
+										model.board),
+									currentPlayer: function () {
+										var _v4 = model.currentPlayer;
+										if (_v4 === 2) {
+											return 1;
 										} else {
-											return x;
+											return 2;
 										}
-									} else {
-										return x;
-									}
+									}()
 								}),
-							model.board),
-						currentPlayer: function () {
-							var _v2 = model.currentPlayer;
-							if (_v2 === 2) {
-								return 1;
-							} else {
-								return 2;
-							}
-						}()
-					}),
-				$elm$core$Platform$Cmd$none);
+							$elm$core$Platform$Cmd$none);
+					} else {
+						var $temp$msg = $author$project$Model$DoNothing,
+							$temp$model = model;
+						msg = $temp$msg;
+						model = $temp$model;
+						continue update;
+					}
+				} else {
+					var $temp$msg = $author$project$Model$DoNothing,
+						$temp$model = model;
+					msg = $temp$msg;
+					model = $temp$model;
+					continue update;
+				}
+			}
 		}
 	});
 var $author$project$Model$MarkSquare = function (a) {
@@ -5269,6 +5291,16 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
 var $elm$html$Html$div = _VirtualDom_node('div');
+var $author$project$Model$fillSquare = function (squareType) {
+	switch (squareType.$) {
+		case 'Empty':
+			return '';
+		case 'Player1':
+			return 'X';
+		default:
+			return 'O';
+	}
+};
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 'Normal', a: a};
 };
@@ -5333,7 +5365,8 @@ var $author$project$Main$view = function (model) {
 									]),
 								_List_fromArray(
 									[
-										$elm$html$Html$text(x)
+										$elm$html$Html$text(
+										$author$project$Model$fillSquare(x))
 									]));
 						}),
 					model.board))

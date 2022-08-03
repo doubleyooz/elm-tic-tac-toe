@@ -7,6 +7,8 @@ import Html.Events exposing (onClick)
 import Model exposing (Model, Msg(..))
 import Update exposing (update)
 import Utils exposing (getElementByIndex, getLast)
+import Model exposing (Square(..))
+import Model exposing (fillSquare)
 
 
 main : Program () Model Msg
@@ -20,7 +22,7 @@ main =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { board = [ "", "", "", "", "", "", "", "", "" ]
+    ( { board = [ Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty ]
       , currentPlayer = 1 -- 1 or 2
       }
     , Cmd.none
@@ -72,7 +74,7 @@ view model =
                             )
                         , onClick (MarkSquare i)
                         ]
-                        [ text x ]
+                        [ text (fillSquare x) ]
                 )
                 model.board
             )

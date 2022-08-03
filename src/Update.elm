@@ -1,6 +1,6 @@
 module Update exposing (update)
 
-import Model exposing (Model, Msg(..), values)
+import Model exposing (Model, Msg(..), Square(..), fillSquare)
 import Utils exposing (getElementByIndex, getLast)
 
 
@@ -11,29 +11,39 @@ update msg model =
             ( model, Cmd.none )
 
         MarkSquare id ->
-            ( { model
-                | board =
-                    List.indexedMap
-                        (\i x ->
-                            if i == id then
-                                case getElementByIndex values model.currentPlayer of
-                                    Just value ->
-                                        value
+            case getElementByIndex model.board id of
+                Just val ->
+                    case val of
+                        Empty ->
+                            ( { model
+                                | board =
+                                    List.indexedMap
+                                        (\i x ->
+                                            if i == id then
+                                                case model.currentPlayer of
+                                                    1 ->
+                                                        Player1
 
-                                    Nothing ->
-                                        x
+                                                    _ ->
+                                                        Player2
 
-                            else
-                                x
-                        )
-                        model.board
-                , currentPlayer =
-                    case model.currentPlayer of
-                        2 ->
-                            1
+                                            else
+                                                x
+                                        )
+                                        model.board
+                                , currentPlayer =
+                                    case model.currentPlayer of
+                                        2 ->
+                                            1
+
+                                        _ ->
+                                            2
+                              }
+                            , Cmd.none
+                            )
 
                         _ ->
-                            2
-              }
-            , Cmd.none
-            )
+                            update DoNothing model
+
+                Nothing ->
+                    update DoNothing model
