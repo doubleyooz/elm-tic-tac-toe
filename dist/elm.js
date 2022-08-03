@@ -5165,7 +5165,8 @@ var $author$project$Main$init = function (_v0) {
 	return _Utils_Tuple2(
 		{
 			board: _List_fromArray(
-				[0, 0, 0, 0, 0, 0, 0, 0, 0])
+				['', '', '', '', '', '', '', '', '']),
+			currentPlayer: 1
 		},
 		$elm$core$Platform$Cmd$none);
 };
@@ -5173,10 +5174,91 @@ var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $author$project$Main$subscriptions = function (model) {
 	return $elm$core$Platform$Sub$batch(_List_Nil);
 };
+var $elm$core$List$head = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return $elm$core$Maybe$Just(x);
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $elm$core$List$tail = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return $elm$core$Maybe$Just(xs);
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $author$project$Utils$getElementByIndex = F2(
+	function (list, i) {
+		getElementByIndex:
+		while (true) {
+			if (!i) {
+				return $elm$core$List$head(list);
+			} else {
+				var $temp$list = function () {
+					var _v1 = $elm$core$List$tail(list);
+					if (_v1.$ === 'Just') {
+						var t = _v1.a;
+						return t;
+					} else {
+						return _List_Nil;
+					}
+				}(),
+					$temp$i = i - 1;
+				list = $temp$list;
+				i = $temp$i;
+				continue getElementByIndex;
+			}
+		}
+	});
+var $author$project$Model$values = _List_fromArray(
+	['', 'O', 'X']);
 var $author$project$Update$update = F2(
 	function (msg, model) {
-		return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+		if (msg.$ === 'DoNothing') {
+			return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+		} else {
+			var id = msg.a;
+			return _Utils_Tuple2(
+				_Utils_update(
+					model,
+					{
+						board: A2(
+							$elm$core$List$indexedMap,
+							F2(
+								function (i, x) {
+									if (_Utils_eq(i, id)) {
+										var _v1 = A2($author$project$Utils$getElementByIndex, $author$project$Model$values, model.currentPlayer);
+										if (_v1.$ === 'Just') {
+											var value = _v1.a;
+											return value;
+										} else {
+											return x;
+										}
+									} else {
+										return x;
+									}
+								}),
+							model.board),
+						currentPlayer: function () {
+							var _v2 = model.currentPlayer;
+							if (_v2 === 2) {
+								return 1;
+							} else {
+								return 2;
+							}
+						}()
+					}),
+				$elm$core$Platform$Cmd$none);
+		}
 	});
+var $author$project$Model$MarkSquare = function (a) {
+	return {$: 'MarkSquare', a: a};
+};
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
@@ -5187,6 +5269,23 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
 var $elm$html$Html$div = _VirtualDom_node('div');
+var $elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
+var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var $elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var $elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'click',
+		$elm$json$Json$Decode$succeed(msg));
+};
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $author$project$Main$view = function (model) {
@@ -5204,99 +5303,40 @@ var $author$project$Main$view = function (model) {
 					[
 						$elm$html$Html$Attributes$class('board')
 					]),
-				_List_fromArray(
-					[
-						A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('square')
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('X')
-							])),
-						A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('square inline-border')
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('X')
-							])),
-						A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('square')
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('X')
-							])),
-						A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('square block-border')
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('X')
-							])),
-						A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('square full-border')
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('X')
-							])),
-						A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('square block-border')
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('X')
-							])),
-						A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('square')
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('X')
-							])),
-						A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('square inline-border')
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('X')
-							])),
-						A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('square')
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('X')
-							]))
-					]))
+				A2(
+					$elm$core$List$indexedMap,
+					F2(
+						function (i, x) {
+							return A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class(
+										'square' + function () {
+											switch (i) {
+												case 1:
+													return ' inline-border';
+												case 3:
+													return ' block-border';
+												case 4:
+													return ' full-border';
+												case 5:
+													return ' block-border';
+												case 7:
+													return ' inline-border';
+												default:
+													return '';
+											}
+										}()),
+										$elm$html$Html$Events$onClick(
+										$author$project$Model$MarkSquare(i))
+									]),
+								_List_fromArray(
+									[
+										$elm$html$Html$text(x)
+									]));
+						}),
+					model.board))
 			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$element(

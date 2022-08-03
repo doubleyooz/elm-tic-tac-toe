@@ -12,14 +12,22 @@ body {
     .board {
         display: flex;
         flex-wrap: wrap;
-        height: 33%;
-        width: 33%;
+        height: 33vw;
+        width: 33vw;
+
+        min-width: 200px;
+        min-height: 200px;
         .square {
             display: flex;
             width: 32%;
             height: 33%;
             justify-content: center;
             align-items: center;
+
+            color: white;
+            font-weight: 700;
+            font-size: 30px;
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 
         }
         .full-border {
