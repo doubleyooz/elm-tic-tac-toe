@@ -7,8 +7,9 @@ import Html.Events exposing (onClick)
 import Model exposing (Model, Msg(..))
 import Update exposing (update)
 import Utils exposing (getElementByIndex, getLast)
-import Model exposing (Square(..))
+import Model exposing (Player(..))
 import Model exposing (fillSquare)
+import Model exposing (GameState(..))
 
 
 main : Program () Model Msg
@@ -22,8 +23,9 @@ main =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { board = [ Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty, Empty ]
-      , currentPlayer = 1 -- 1 or 2
+    ( { board = [ Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing ]
+      , currentPlayer = Player1
+      , gameState = OnGoing
       }
     , Cmd.none
     )

@@ -1,23 +1,57 @@
-module Model exposing (Model, Msg(..), Square(..), fillSquare)
+module Model exposing (Data, GameState(..), Model, Msg(..), Player(..), RequestBody, fillSquare)
+
+import Http
+
 
 type alias Model =
-    {
-        board: List Square,
-        currentPlayer: Int
+    { board : List (Maybe Player)
+    , currentPlayer : Player
+    , gameState : GameState
     }
 
-type Square 
-    = Empty
-    | Player1
+
+type GameState
+    = Draw
+    | Win
+    | OnGoing
+
+
+type Player
+    = Player1
     | Player2
 
-fillSquare : Square -> String
-fillSquare squareType = 
+
+fillSquare : Maybe Player -> String
+fillSquare squareType =
     case squareType of
-        Empty -> ""
-        Player1 -> "X"
-        Player2 -> "O"
-    
-type Msg --update message types
+        Just player ->
+            case player of
+                Player1 ->
+                    "X"
+
+                Player2 ->
+                    "O"
+
+        Nothing ->
+            ""
+
+
+type alias Data =
+    { code : Int
+    , data : Int
+    }
+
+
+type alias RequestBody =
+    { values : List (Maybe Player)
+    , board : List (Maybe Player)
+    }
+
+
+type
+    Msg
+    --update message types
     = MarkSquare Int
+    | IsEndState (Result Http.Error Data)
+    | SendIsEndStateRequest
     | DoNothing
