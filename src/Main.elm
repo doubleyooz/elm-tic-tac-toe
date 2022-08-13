@@ -44,10 +44,13 @@ subscriptions model =
 
 view : Model -> Html Msg
 view model =
-    case model.gameState of
-        OnGoing ->
-            div [ class "game-container" ]
-                [ div [ class "board" ]
+    div [ class "game-container" ]
+        (case model.gameState of
+            OnGoing ->
+                [ div [ class "turn" ]
+                    [ text (fillSquare (Just model.currentPlayer) ++ " Turn")
+                    ]
+                , div [ class "board" ]
                     (List.indexedMap
                         (\i x ->
                             div
@@ -81,8 +84,24 @@ view model =
                     )
                 ]
 
-        Draw ->
-            Debug.todo "branch 'Draw' not implemented"
+            Draw ->
+                [ div [ class "turn" ]
+                    [ text "Draw" ]
+                ]
 
-        Win ->
-            Debug.todo "branch 'Win' not implemented"
+            Win ->
+                [ div [ class "turn" ]
+                    [ text
+                        (fillSquare
+                            (case model.currentPlayer of
+                                Player1 ->
+                                    Just Player2
+
+                                Player2 ->
+                                    Just Player1
+                            )
+                            ++ " Won"
+                        )
+                    ]
+                ]
+        )

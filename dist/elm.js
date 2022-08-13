@@ -6368,76 +6368,112 @@ var $elm$html$Html$Events$onClick = function (msg) {
 };
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-var $elm$core$Debug$todo = _Debug_todo;
 var $author$project$Main$view = function (model) {
-	var _v0 = model.gameState;
-	switch (_v0.$) {
-		case 'OnGoing':
-			return A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('game-container')
-					]),
-				_List_fromArray(
-					[
-						A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('board')
-							]),
-						A2(
-							$elm$core$List$indexedMap,
-							F2(
-								function (i, x) {
-									return A2(
-										$elm$html$Html$div,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$class(
-												'square' + function () {
-													switch (i) {
-														case 1:
-															return ' inline-border';
-														case 3:
-															return ' block-border';
-														case 4:
-															return ' full-border';
-														case 5:
-															return ' block-border';
-														case 7:
-															return ' inline-border';
-														default:
-															return '';
-													}
-												}()),
-												$elm$html$Html$Events$onClick(
-												$author$project$Model$MarkSquare(i))
-											]),
-										_List_fromArray(
-											[
-												$elm$html$Html$text(
-												$author$project$Model$fillSquare(x))
-											]));
-								}),
-							model.board))
-					]));
-		case 'Draw':
-			return _Debug_todo(
-				'Main',
-				{
-					start: {line: 85, column: 13},
-					end: {line: 85, column: 23}
-				})('branch \'Draw\' not implemented');
-		default:
-			return _Debug_todo(
-				'Main',
-				{
-					start: {line: 88, column: 13},
-					end: {line: 88, column: 23}
-				})('branch \'Win\' not implemented');
-	}
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('game-container')
+			]),
+		function () {
+			var _v0 = model.gameState;
+			switch (_v0.$) {
+				case 'OnGoing':
+					return _List_fromArray(
+						[
+							A2(
+							$elm$html$Html$div,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('turn')
+								]),
+							_List_fromArray(
+								[
+									$elm$html$Html$text(
+									$author$project$Model$fillSquare(
+										$elm$core$Maybe$Just(model.currentPlayer)) + ' Turn')
+								])),
+							A2(
+							$elm$html$Html$div,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('board')
+								]),
+							A2(
+								$elm$core$List$indexedMap,
+								F2(
+									function (i, x) {
+										return A2(
+											$elm$html$Html$div,
+											_List_fromArray(
+												[
+													$elm$html$Html$Attributes$class(
+													'square' + function () {
+														switch (i) {
+															case 1:
+																return ' inline-border';
+															case 3:
+																return ' block-border';
+															case 4:
+																return ' full-border';
+															case 5:
+																return ' block-border';
+															case 7:
+																return ' inline-border';
+															default:
+																return '';
+														}
+													}()),
+													$elm$html$Html$Events$onClick(
+													$author$project$Model$MarkSquare(i))
+												]),
+											_List_fromArray(
+												[
+													$elm$html$Html$text(
+													$author$project$Model$fillSquare(x))
+												]));
+									}),
+								model.board))
+						]);
+				case 'Draw':
+					return _List_fromArray(
+						[
+							A2(
+							$elm$html$Html$div,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('turn')
+								]),
+							_List_fromArray(
+								[
+									$elm$html$Html$text('Draw')
+								]))
+						]);
+				default:
+					return _List_fromArray(
+						[
+							A2(
+							$elm$html$Html$div,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('turn')
+								]),
+							_List_fromArray(
+								[
+									$elm$html$Html$text(
+									$author$project$Model$fillSquare(
+										function () {
+											var _v2 = model.currentPlayer;
+											if (_v2.$ === 'Player1') {
+												return $elm$core$Maybe$Just($author$project$Model$Player2);
+											} else {
+												return $elm$core$Maybe$Just($author$project$Model$Player1);
+											}
+										}()) + ' Won')
+								]))
+						]);
+			}
+		}());
 };
 var $author$project$Main$main = $elm$browser$Browser$element(
 	{init: $author$project$Main$init, subscriptions: $author$project$Main$subscriptions, update: $author$project$Update$update, view: $author$project$Main$view});
