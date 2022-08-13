@@ -45,54 +45,17 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
     div [ class "game-container" ]
-        (case model.gameState of
-            OnGoing ->
-                [ div [ class "turn" ]
-                    [ text (fillSquare (Just model.currentPlayer) ++ " Turn")
-                    ]
-                , div [ class "board" ]
-                    (List.indexedMap
-                        (\i x ->
-                            div
-                                [ class
-                                    ("square"
-                                        ++ (case i of
-                                                1 ->
-                                                    " inline-border"
+        [ div [ class "turn" ]
+            [ text
+                (case model.gameState of
+                    OnGoing ->
+                        fillSquare (Just model.currentPlayer) ++ " Turn"
 
-                                                3 ->
-                                                    " block-border"
+                    Draw ->
+                        "Draw"
 
-                                                4 ->
-                                                    " full-border"
-
-                                                5 ->
-                                                    " block-border"
-
-                                                7 ->
-                                                    " inline-border"
-
-                                                _ ->
-                                                    ""
-                                           )
-                                    )
-                                , onClick (MarkSquare i)
-                                ]
-                                [ text (fillSquare x) ]
-                        )
-                        model.board
-                    )
-                ]
-
-            Draw ->
-                [ div [ class "turn" ]
-                    [ text "Draw" ]
-                ]
-
-            Win ->
-                [ div [ class "turn" ]
-                    [ text
-                        (fillSquare
+                    Win ->
+                        fillSquare
                             (case model.currentPlayer of
                                 Player1 ->
                                     Just Player2
@@ -101,7 +64,55 @@ view model =
                                     Just Player1
                             )
                             ++ " Won"
-                        )
-                    ]
-                ]
-        )
+                )
+            ]
+        , div [class ""] []
+        , div
+            [ class
+                ("board"
+                    ++ (case model.gameState of
+                            OnGoing ->
+                                ""
+
+                            _ ->
+                                " fade-out"
+                       )
+                )
+            ]
+            (List.indexedMap
+                (\i x ->
+                    div
+                        [ class
+                            ("square"
+                                ++ (case i of
+                                        1 ->
+                                            " inline-border"
+
+                                        3 ->
+                                            " block-border"
+
+                                        4 ->
+                                            " full-border"
+
+                                        5 ->
+                                            " block-border"
+
+                                        7 ->
+                                            " inline-border"
+
+                                        _ ->
+                                            ""
+                                   )
+                            )
+                        , case model.gameState of
+                            OnGoing ->
+                                onClick (MarkSquare i)
+
+                            _ ->
+                                onClick DoNothing
+                        ]
+                        [ text (fillSquare x) ]
+                )
+                model.board
+            )
+        ]

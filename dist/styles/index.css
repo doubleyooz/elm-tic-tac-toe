@@ -11,6 +11,21 @@ body {
   align-items: center;
   height: 100vh;
 }
+@keyframes fade-out {
+  100% {
+    -webkit-transform: scale(0.4);
+    opacity: 0;
+  }
+}
+.game-container .fade-out {
+  animation: fade-out 0.5s ease-in;
+  animation-fill-mode: forwards;
+  animation-delay: 1.5s;
+  background-color: rgb(204, 204, 204);
+  width: 100px;
+  height: 100px;
+  opacity: 1;
+}
 .game-container .board {
   display: flex;
   flex-wrap: wrap;

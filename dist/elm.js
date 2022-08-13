@@ -6337,6 +6337,7 @@ var $author$project$Update$update = F2(
 				}
 		}
 	});
+var $author$project$Model$DoNothing = {$: 'DoNothing'};
 var $author$project$Model$MarkSquare = function (a) {
 	return {$: 'MarkSquare', a: a};
 };
@@ -6375,105 +6376,95 @@ var $author$project$Main$view = function (model) {
 			[
 				$elm$html$Html$Attributes$class('game-container')
 			]),
-		function () {
-			var _v0 = model.gameState;
-			switch (_v0.$) {
-				case 'OnGoing':
-					return _List_fromArray(
-						[
-							A2(
-							$elm$html$Html$div,
-							_List_fromArray(
-								[
-									$elm$html$Html$Attributes$class('turn')
-								]),
-							_List_fromArray(
-								[
-									$elm$html$Html$text(
-									$author$project$Model$fillSquare(
-										$elm$core$Maybe$Just(model.currentPlayer)) + ' Turn')
-								])),
-							A2(
-							$elm$html$Html$div,
-							_List_fromArray(
-								[
-									$elm$html$Html$Attributes$class('board')
-								]),
-							A2(
-								$elm$core$List$indexedMap,
-								F2(
-									function (i, x) {
-										return A2(
-											$elm$html$Html$div,
-											_List_fromArray(
-												[
-													$elm$html$Html$Attributes$class(
-													'square' + function () {
-														switch (i) {
-															case 1:
-																return ' inline-border';
-															case 3:
-																return ' block-border';
-															case 4:
-																return ' full-border';
-															case 5:
-																return ' block-border';
-															case 7:
-																return ' inline-border';
-															default:
-																return '';
-														}
-													}()),
-													$elm$html$Html$Events$onClick(
-													$author$project$Model$MarkSquare(i))
-												]),
-											_List_fromArray(
-												[
-													$elm$html$Html$text(
-													$author$project$Model$fillSquare(x))
-												]));
-									}),
-								model.board))
-						]);
-				case 'Draw':
-					return _List_fromArray(
-						[
-							A2(
-							$elm$html$Html$div,
-							_List_fromArray(
-								[
-									$elm$html$Html$Attributes$class('turn')
-								]),
-							_List_fromArray(
-								[
-									$elm$html$Html$text('Draw')
-								]))
-						]);
-				default:
-					return _List_fromArray(
-						[
-							A2(
-							$elm$html$Html$div,
-							_List_fromArray(
-								[
-									$elm$html$Html$Attributes$class('turn')
-								]),
-							_List_fromArray(
-								[
-									$elm$html$Html$text(
-									$author$project$Model$fillSquare(
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('turn')
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text(
+						function () {
+							var _v0 = model.gameState;
+							switch (_v0.$) {
+								case 'OnGoing':
+									return $author$project$Model$fillSquare(
+										$elm$core$Maybe$Just(model.currentPlayer)) + ' Turn';
+								case 'Draw':
+									return 'Draw';
+								default:
+									return $author$project$Model$fillSquare(
 										function () {
-											var _v2 = model.currentPlayer;
-											if (_v2.$ === 'Player1') {
+											var _v1 = model.currentPlayer;
+											if (_v1.$ === 'Player1') {
 												return $elm$core$Maybe$Just($author$project$Model$Player2);
 											} else {
 												return $elm$core$Maybe$Just($author$project$Model$Player1);
 											}
-										}()) + ' Won')
-								]))
-						]);
-			}
-		}());
+										}()) + ' Won';
+							}
+						}())
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class(
+						'board' + function () {
+							var _v2 = model.gameState;
+							if (_v2.$ === 'OnGoing') {
+								return '';
+							} else {
+								return ' fade-out';
+							}
+						}())
+					]),
+				A2(
+					$elm$core$List$indexedMap,
+					F2(
+						function (i, x) {
+							return A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class(
+										'square' + function () {
+											switch (i) {
+												case 1:
+													return ' inline-border';
+												case 3:
+													return ' block-border';
+												case 4:
+													return ' full-border';
+												case 5:
+													return ' block-border';
+												case 7:
+													return ' inline-border';
+												default:
+													return '';
+											}
+										}()),
+										function () {
+										var _v4 = model.gameState;
+										if (_v4.$ === 'OnGoing') {
+											return $elm$html$Html$Events$onClick(
+												$author$project$Model$MarkSquare(i));
+										} else {
+											return $elm$html$Html$Events$onClick($author$project$Model$DoNothing);
+										}
+									}()
+									]),
+								_List_fromArray(
+									[
+										$elm$html$Html$text(
+										$author$project$Model$fillSquare(x))
+									]));
+						}),
+					model.board))
+			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$element(
 	{init: $author$project$Main$init, subscriptions: $author$project$Main$subscriptions, update: $author$project$Update$update, view: $author$project$Main$view});
