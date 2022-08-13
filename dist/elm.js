@@ -5399,6 +5399,7 @@ var $author$project$Utils$getElementByIndex = F2(
 var $author$project$Model$IsEndState = function (a) {
 	return {$: 'IsEndState', a: a};
 };
+var $author$project$Env$client = 'http://localhost:4000/v1/finalState';
 var $elm$json$Json$Decode$decodeString = _Json_runOnString;
 var $elm$http$Http$BadStatus_ = F2(
 	function (a, b) {
@@ -6262,7 +6263,7 @@ var $author$project$Update$isEndStateRequest = function (model) {
 			body: $elm$http$Http$jsonBody(
 				$author$project$Update$requestEncoder(model)),
 			expect: A2($elm$http$Http$expectJson, $author$project$Model$IsEndState, $author$project$Update$requestDecoder),
-			url: 'http://localhost:4000/v1/finalState'
+			url: $author$project$Env$client
 		});
 };
 var $author$project$Update$update = F2(
@@ -6285,9 +6286,11 @@ var $author$project$Update$update = F2(
 									var _v1 = ds.data + 1;
 									switch (_v1) {
 										case 0:
-											return $author$project$Model$OnGoing;
+											return model.gameState;
 										case 1:
 											return $author$project$Model$Draw;
+										case 4:
+											return $author$project$Model$OnGoing;
 										default:
 											return $author$project$Model$Win;
 									}
@@ -6368,57 +6371,76 @@ var $elm$html$Html$Events$onClick = function (msg) {
 };
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+var $elm$core$Debug$todo = _Debug_todo;
 var $author$project$Main$view = function (model) {
-	return A2(
-		$elm$html$Html$div,
-		_List_fromArray(
-			[
-				$elm$html$Html$Attributes$class('game-container')
-			]),
-		_List_fromArray(
-			[
-				A2(
+	var _v0 = model.gameState;
+	switch (_v0.$) {
+		case 'OnGoing':
+			return A2(
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('board')
+						$elm$html$Html$Attributes$class('game-container')
 					]),
-				A2(
-					$elm$core$List$indexedMap,
-					F2(
-						function (i, x) {
-							return A2(
-								$elm$html$Html$div,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class(
-										'square' + function () {
-											switch (i) {
-												case 1:
-													return ' inline-border';
-												case 3:
-													return ' block-border';
-												case 4:
-													return ' full-border';
-												case 5:
-													return ' block-border';
-												case 7:
-													return ' inline-border';
-												default:
-													return '';
-											}
-										}()),
-										$elm$html$Html$Events$onClick(
-										$author$project$Model$MarkSquare(i))
-									]),
-								_List_fromArray(
-									[
-										$elm$html$Html$text(
-										$author$project$Model$fillSquare(x))
-									]));
-						}),
-					model.board))
-			]));
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('board')
+							]),
+						A2(
+							$elm$core$List$indexedMap,
+							F2(
+								function (i, x) {
+									return A2(
+										$elm$html$Html$div,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class(
+												'square' + function () {
+													switch (i) {
+														case 1:
+															return ' inline-border';
+														case 3:
+															return ' block-border';
+														case 4:
+															return ' full-border';
+														case 5:
+															return ' block-border';
+														case 7:
+															return ' inline-border';
+														default:
+															return '';
+													}
+												}()),
+												$elm$html$Html$Events$onClick(
+												$author$project$Model$MarkSquare(i))
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text(
+												$author$project$Model$fillSquare(x))
+											]));
+								}),
+							model.board))
+					]));
+		case 'Draw':
+			return _Debug_todo(
+				'Main',
+				{
+					start: {line: 85, column: 13},
+					end: {line: 85, column: 23}
+				})('branch \'Draw\' not implemented');
+		default:
+			return _Debug_todo(
+				'Main',
+				{
+					start: {line: 88, column: 13},
+					end: {line: 88, column: 23}
+				})('branch \'Win\' not implemented');
+	}
 };
 var $author$project$Main$main = $elm$browser$Browser$element(
 	{init: $author$project$Main$init, subscriptions: $author$project$Main$subscriptions, update: $author$project$Update$update, view: $author$project$Main$view});

@@ -54,12 +54,15 @@ update msg model =
             ( { model
                 | gameState =
                     case ds.data + 1 of
+
                         0 ->
-                            OnGoing
+                            model.gameState
 
                         1 ->
                             Draw
 
+                        4 -> OnGoing
+                        
                         _ ->
                             Win
               }
