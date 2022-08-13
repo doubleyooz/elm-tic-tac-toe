@@ -53,5 +53,4 @@ type
     --update message types
     = MarkSquare Int
     | IsEndState (Result Http.Error Data)
-    | SendIsEndStateRequest
     | DoNothing

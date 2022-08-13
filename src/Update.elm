@@ -1,5 +1,6 @@
 module Update exposing (update)
 
+import Env exposing (client)
 import Http
 import Json.Decode as Decode
     exposing
@@ -14,22 +15,21 @@ import Json.Decode as Decode
 import Json.Encode as Encode
 import Model exposing (Data, GameState(..), Model, Msg(..), Player(..), RequestBody, fillSquare)
 import Utils exposing (getElementByIndex, getLast)
-import Env exposing (client)
 
 
-isEndStateRequest : Model -> Cmd Msg
-isEndStateRequest model =
+isEndStateRequest : List (Maybe Player) -> Cmd Msg
+isEndStateRequest board =
     Http.post
         { url = client
-        , body = Http.jsonBody (requestEncoder model)
+        , body = Http.jsonBody (requestEncoder board)
         , expect = Http.expectJson IsEndState requestDecoder
         }
 
 
-requestEncoder : Model -> Encode.Value
-requestEncoder model =
+requestEncoder : List (Maybe Player) -> Encode.Value
+requestEncoder board =
     Encode.object
-        [ ( "board", Encode.list Encode.string (List.map fillSquare model.board) )
+        [ ( "board", Encode.list Encode.string (List.map fillSquare board) )
         , ( "values", Encode.list Encode.string [ "", "X", "O" ] )
         ]
 
@@ -47,22 +47,19 @@ update msg model =
         DoNothing ->
             ( model, Cmd.none )
 
-        SendIsEndStateRequest ->
-            ( model, isEndStateRequest model )
-
         IsEndState (Ok ds) ->
             ( { model
                 | gameState =
                     case ds.data + 1 of
-
                         0 ->
                             model.gameState
 
                         1 ->
                             Draw
 
-                        4 -> OnGoing
-                        
+                        4 ->
+                            OnGoing
+
                         _ ->
                             Win
               }
@@ -77,8 +74,8 @@ update msg model =
                 Just val ->
                     case val of
                         Nothing ->
-                            ( { model
-                                | board =
+                            let
+                                newBoard =
                                     List.indexedMap
                                         (\i x ->
                                             case x of
@@ -93,6 +90,9 @@ update msg model =
                                                         Nothing
                                         )
                                         model.board
+                            in
+                            ( { model
+                                | board = newBoard
                                 , currentPlayer =
                                     case model.currentPlayer of
                                         Player2 ->
@@ -101,7 +101,7 @@ update msg model =
                                         Player1 ->
                                             Player2
                               }
-                            , isEndStateRequest model
+                            , isEndStateRequest newBoard
                             )
 
                         _ ->

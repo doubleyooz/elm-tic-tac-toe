@@ -6238,7 +6238,7 @@ var $elm$json$Json$Encode$object = function (pairs) {
 			pairs));
 };
 var $elm$json$Json$Encode$string = _Json_wrap;
-var $author$project$Update$requestEncoder = function (model) {
+var $author$project$Update$requestEncoder = function (board) {
 	return $elm$json$Json$Encode$object(
 		_List_fromArray(
 			[
@@ -6247,7 +6247,7 @@ var $author$project$Update$requestEncoder = function (model) {
 				A2(
 					$elm$json$Json$Encode$list,
 					$elm$json$Json$Encode$string,
-					A2($elm$core$List$map, $author$project$Model$fillSquare, model.board))),
+					A2($elm$core$List$map, $author$project$Model$fillSquare, board))),
 				_Utils_Tuple2(
 				'values',
 				A2(
@@ -6257,11 +6257,11 @@ var $author$project$Update$requestEncoder = function (model) {
 						['', 'X', 'O'])))
 			]));
 };
-var $author$project$Update$isEndStateRequest = function (model) {
+var $author$project$Update$isEndStateRequest = function (board) {
 	return $elm$http$Http$post(
 		{
 			body: $elm$http$Http$jsonBody(
-				$author$project$Update$requestEncoder(model)),
+				$author$project$Update$requestEncoder(board)),
 			expect: A2($elm$http$Http$expectJson, $author$project$Model$IsEndState, $author$project$Update$requestDecoder),
 			url: $author$project$Env$client
 		});
@@ -6271,10 +6271,6 @@ var $author$project$Update$update = F2(
 		switch (msg.$) {
 			case 'DoNothing':
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-			case 'SendIsEndStateRequest':
-				return _Utils_Tuple2(
-					model,
-					$author$project$Update$isEndStateRequest(model));
 			case 'IsEndState':
 				if (msg.a.$ === 'Ok') {
 					var ds = msg.a.a;
@@ -6306,32 +6302,33 @@ var $author$project$Update$update = F2(
 				if (_v2.$ === 'Just') {
 					var val = _v2.a;
 					if (val.$ === 'Nothing') {
+						var newBoard = A2(
+							$elm$core$List$indexedMap,
+							F2(
+								function (i, x) {
+									if (x.$ === 'Just') {
+										var player = x.a;
+										return $elm$core$Maybe$Just(player);
+									} else {
+										return _Utils_eq(i, id) ? $elm$core$Maybe$Just(model.currentPlayer) : $elm$core$Maybe$Nothing;
+									}
+								}),
+							model.board);
 						return _Utils_Tuple2(
 							_Utils_update(
 								model,
 								{
-									board: A2(
-										$elm$core$List$indexedMap,
-										F2(
-											function (i, x) {
-												if (x.$ === 'Just') {
-													var player = x.a;
-													return $elm$core$Maybe$Just(player);
-												} else {
-													return _Utils_eq(i, id) ? $elm$core$Maybe$Just(model.currentPlayer) : $elm$core$Maybe$Nothing;
-												}
-											}),
-										model.board),
+									board: newBoard,
 									currentPlayer: function () {
-										var _v5 = model.currentPlayer;
-										if (_v5.$ === 'Player2') {
+										var _v4 = model.currentPlayer;
+										if (_v4.$ === 'Player2') {
 											return $author$project$Model$Player1;
 										} else {
 											return $author$project$Model$Player2;
 										}
 									}()
 								}),
-							$author$project$Update$isEndStateRequest(model));
+							$author$project$Update$isEndStateRequest(newBoard));
 					} else {
 						return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 					}
