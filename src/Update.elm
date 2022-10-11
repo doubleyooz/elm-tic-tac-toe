@@ -103,6 +103,16 @@ update msg model =
             , Cmd.none
             )
 
+        Reset ->
+            ( { model
+                | board = [ Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing ]
+                , gameState = OnGoing
+                , currentPlayer = Player1
+                , errMsg = Nothing
+              }
+            , Cmd.none
+            )
+
         MarkSquare id ->
             case getElementByIndex model.board id of
                 Just val ->

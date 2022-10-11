@@ -66,3 +66,4 @@ type
     = MarkSquare Int
     | IsEndState (Result Http.Error Data)
     | DoNothing
+    | Reset

@@ -6338,6 +6338,18 @@ var $author$project$Update$update = F2(
 							}),
 						$elm$core$Platform$Cmd$none);
 				}
+			case 'Reset':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							board: _List_fromArray(
+								[$elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing]),
+							currentPlayer: $author$project$Model$Player1,
+							errMsg: $elm$core$Maybe$Nothing,
+							gameState: $author$project$Model$OnGoing
+						}),
+					$elm$core$Platform$Cmd$none);
 			default:
 				var id = msg.a;
 				var _v5 = A2($author$project$Utils$getElementByIndex, model.board, id);
@@ -6383,6 +6395,7 @@ var $author$project$Model$DoNothing = {$: 'DoNothing'};
 var $author$project$Model$MarkSquare = function (a) {
 	return {$: 'MarkSquare', a: a};
 };
+var $author$project$Model$Reset = {$: 'Reset'};
 var $elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
 		return A2(
@@ -6551,31 +6564,45 @@ var $author$project$Main$view = function (model) {
 									$elm$html$Html$div,
 									_List_fromArray(
 										[
-											$elm$html$Html$Attributes$class('endgame')
+											$elm$html$Html$Attributes$class('endgame'),
+											$elm$html$Html$Events$onClick($author$project$Model$Reset)
 										]),
 									_List_fromArray(
 										[
-											$elm$html$Html$text('Draw')
+											A2(
+											$elm$html$Html$span,
+											_List_Nil,
+											_List_fromArray(
+												[
+													$elm$html$Html$text('Draw')
+												]))
 										]));
 							default:
 								return A2(
 									$elm$html$Html$div,
 									_List_fromArray(
 										[
-											$elm$html$Html$Attributes$class('endgame')
+											$elm$html$Html$Attributes$class('endgame'),
+											$elm$html$Html$Events$onClick($author$project$Model$Reset)
 										]),
 									_List_fromArray(
 										[
-											$elm$html$Html$text(
-											$author$project$Model$fillSquare(
-												function () {
-													var _v4 = model.currentPlayer;
-													if (_v4.$ === 'Player1') {
-														return $elm$core$Maybe$Just($author$project$Model$Player2);
-													} else {
-														return $elm$core$Maybe$Just($author$project$Model$Player1);
-													}
-												}()) + ' Won')
+											A2(
+											$elm$html$Html$span,
+											_List_Nil,
+											_List_fromArray(
+												[
+													$elm$html$Html$text(
+													$author$project$Model$fillSquare(
+														function () {
+															var _v4 = model.currentPlayer;
+															if (_v4.$ === 'Player1') {
+																return $elm$core$Maybe$Just($author$project$Model$Player2);
+															} else {
+																return $elm$core$Maybe$Just($author$project$Model$Player1);
+															}
+														}()) + ' Won')
+												]))
 										]));
 						}
 					}(),

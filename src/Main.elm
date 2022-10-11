@@ -88,21 +88,23 @@ view model =
                     div [ class "hide" ] []
 
                 Draw ->
-                    div [ class "endgame" ] [ text "Draw" ]
+                    div [ class "endgame", onClick Reset ] [ span [] [ text "Draw" ] ]
 
                 Win ->
-                    div [ class "endgame" ]
-                        [ text
-                            (fillSquare
-                                (case model.currentPlayer of
-                                    Player1 ->
-                                        Just Player2
+                    div [ class "endgame", onClick Reset ]
+                        [ span []
+                            [ text
+                                (fillSquare
+                                    (case model.currentPlayer of
+                                        Player1 ->
+                                            Just Player2
 
-                                    Player2 ->
-                                        Just Player1
+                                        Player2 ->
+                                            Just Player1
+                                    )
+                                    ++ " Won"
                                 )
-                                ++ " Won"
-                            )
+                            ]
                         ]
             , div
                 [ class
