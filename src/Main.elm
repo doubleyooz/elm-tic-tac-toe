@@ -22,8 +22,9 @@ init : () -> ( Model, Cmd Msg )
 init _ =
     ( { board = [ Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing ]
       , currentPlayer = Player1
+      , selectedPlayer = Player1
       , gameState = Beginning
-      , gameMode = Easy
+      , gameMode = Friend
       , errMsg = Nothing
       , crossesWon = 0
       , noughtsWon = 0

@@ -6,6 +6,7 @@ import Http
 type alias Model =
     { board : List (Maybe Player)
     , currentPlayer : Player
+    , selectedPlayer : Player
     , gameState : GameState
     , gameMode : GameMode
     , errMsg : Maybe String
@@ -66,6 +67,7 @@ type
     --update message types
     = MarkSquare Int
     | IsEndState (Result Http.Error Data)
+    | BestMove (Result Http.Error Data)
     | DoNothing
     | SelectPlayer Player
     | Reset

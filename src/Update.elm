@@ -1,6 +1,6 @@
 module Update exposing (update)
 
-import Env exposing (client)
+import Env exposing (bestMoveURL, finalStateURL)
 import Http
 import Json.Decode as Decode
     exposing
@@ -10,32 +10,66 @@ import Json.Decode as Decode
         , int
         , list
         , map2
+        , map3
         , string
         )
 import Json.Encode as Encode
-import Model exposing (Data, GameState(..), Model, Msg(..), Player(..), RequestBody, fillSquare)
+import Model exposing (Data, GameMode(..), GameState(..), Model, Msg(..), Player(..), RequestBody, fillSquare)
 import Utils exposing (getElementByIndex, getLast)
 
 
 isEndStateRequest : List (Maybe Player) -> Cmd Msg
 isEndStateRequest board =
     Http.post
-        { url = client
-        , body = Http.jsonBody (requestEncoder board)
-        , expect = Http.expectJson IsEndState requestDecoder
+        { url = finalStateURL
+        , body = Http.jsonBody (endStateEncoder board)
+        , expect = Http.expectJson IsEndState endStateDecoder
         }
 
 
-requestEncoder : List (Maybe Player) -> Encode.Value
-requestEncoder board =
+bestMoveRequest : List (Maybe Player) -> Player -> Cmd Msg
+bestMoveRequest board currentPlayer =
+    Http.post
+        { url = bestMoveURL
+        , body = Http.jsonBody (bestMoveEncoder board currentPlayer)
+        , expect = Http.expectJson IsEndState bestMoveDecoder
+        }
+
+
+endStateEncoder : List (Maybe Player) -> Encode.Value
+endStateEncoder board =
     Encode.object
         [ ( "board", Encode.list Encode.string (List.map fillSquare board) )
         , ( "values", Encode.list Encode.string [ "", "X", "O" ] )
         ]
 
 
-requestDecoder : Decoder Data
-requestDecoder =
+bestMoveEncoder : List (Maybe Player) -> Player -> Encode.Value
+bestMoveEncoder board currentPlayer =
+    Encode.object
+        [ ( "board", Encode.list Encode.string (List.map fillSquare board) )
+        , ( "values"
+          , Encode.list Encode.string
+                (case currentPlayer of
+                    Player1 ->
+                        [ "", fillSquare (Just Player1), fillSquare (Just Player2) ]
+
+                    _ ->
+                        [ "", fillSquare (Just Player2), fillSquare (Just Player1) ]
+                )
+          )
+        ]
+
+
+bestMoveDecoder : Decoder Data
+bestMoveDecoder =
+    map2 Data
+        (field "code" int)
+        (field "data" int)
+
+
+endStateDecoder : Decoder Data
+endStateDecoder =
     map2 Data
         (field "code" int)
         (field "data" int)
@@ -47,10 +81,19 @@ update msg model =
         DoNothing ->
             ( model, Cmd.none )
 
-        IsEndState (Ok ds) ->
+        IsEndState (Ok res) ->
+            let
+                nextPlayer =
+                    case model.currentPlayer of
+                        Player2 ->
+                            Player1
+
+                        Player1 ->
+                            Player2
+            in
             ( { model
                 | gameState =
-                    case ds.data + 1 of
+                    case res.data + 1 of
                         0 ->
                             model.gameState
 
@@ -63,21 +106,16 @@ update msg model =
                         _ ->
                             Win
                 , currentPlayer =
-                    case model.currentPlayer of
-                        Player2 ->
-                            Player1
-
-                        Player1 ->
-                            Player2
+                    nextPlayer
                 , crossesWon =
-                    case ds.data + 1 of
+                    case res.data + 1 of
                         2 ->
                             model.crossesWon + 1
 
                         _ ->
                             model.crossesWon
                 , noughtsWon =
-                    case ds.data + 1 of
+                    case res.data + 1 of
                         3 ->
                             model.noughtsWon + 1
 
@@ -85,7 +123,18 @@ update msg model =
                             model.noughtsWon
                 , errMsg = Just ""
               }
-            , Cmd.none
+            , case res.data + 1 of
+                4 ->
+                    case model.gameMode of
+                        Friend ->
+                            Cmd.none
+
+                        _ ->
+                            {- Put call the engine logic here -}
+                            bestMoveRequest model.board nextPlayer
+
+                _ ->
+                    Cmd.none
             )
 
         IsEndState (Err x) ->
@@ -102,7 +151,7 @@ update msg model =
                             Just "Timeout"
 
                         Http.NetworkError ->
-                            Just "NetworkErrored"
+                            Just "Lost connection to the server"
 
                         Http.BadStatus _ ->
                             Just "BadStatus"
@@ -151,7 +200,6 @@ update msg model =
                             in
                             ( { model
                                 | board = newBoard
-                                
                               }
                             , isEndStateRequest newBoard
                             )
@@ -161,3 +209,40 @@ update msg model =
 
                 Nothing ->
                     ( model, Cmd.none )
+
+        BestMove (Ok res) ->
+            case getElementByIndex model.board res.data of
+                Just val ->
+                    case val of
+                        Nothing ->
+                            let
+                                newBoard =
+                                    List.indexedMap
+                                        (\i x ->
+                                            case x of
+                                                Just player ->
+                                                    Just player
+
+                                                Nothing ->
+                                                    if i == res.data then
+                                                        Just model.currentPlayer
+
+                                                    else
+                                                        Nothing
+                                        )
+                                        model.board
+                            in
+                            ( { model
+                                | board = newBoard
+                              }
+                            , isEndStateRequest newBoard
+                            )
+
+                        _ ->
+                            ( model, Cmd.none )
+
+                Nothing ->
+                    ( model, Cmd.none )
+
+        BestMove (Err _) ->
+            Debug.todo "branch 'BestMove (Err _)' not implemented"
