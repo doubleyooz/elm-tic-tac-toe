@@ -1,4 +1,4 @@
-module Model exposing (Data, GameState(..), Model, Msg(..), Player(..), RequestBody, fillSquare)
+module Model exposing (Data, GameMode(..), GameState(..), Model, Msg(..), Player(..), RequestBody, fillSquare)
 
 import Http
 
@@ -7,6 +7,10 @@ type alias Model =
     { board : List (Maybe Player)
     , currentPlayer : Player
     , gameState : GameState
+    , gameMode : GameMode
+    , errMsg : Maybe String
+    , crossesWon : Int
+    , noughtsWon : Int
     }
 
 
@@ -14,6 +18,14 @@ type GameState
     = Draw
     | Win
     | OnGoing
+
+
+type GameMode
+    = Easy
+    | Medium
+    | Hard
+    | Impossible
+    | Friend
 
 
 type Player

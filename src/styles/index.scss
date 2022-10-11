@@ -4,6 +4,22 @@ body {
   background-color: aqua;
 }
 
+@keyframes fade-out {
+  100% {
+    -webkit-transform: scale(0.4);
+
+    opacity: 0;
+  }
+}
+
+@keyframes fade-in {
+  100% {
+    width: 33vw;
+    height: 33vw;
+    opacity: 1;
+  }
+}
+
 .game-container {
   display: flex;
   flex-direction: column;
@@ -11,60 +27,112 @@ body {
   align-items: center;
   height: 100vh;
 
-  @keyframes fade-out {
-    100% {
-      -webkit-transform: scale(0.4);
-      opacity: 0;
-      
-    }
+  .hide {
+    display: none;
   }
 
-  .fade-out {
-    animation: fade-out 0.5s ease-in;
-    animation-fill-mode: forwards;
-    animation-delay: 1.5s;
-    background-color: rgb(204, 204, 204);
-    width: 100px;
-    height: 100px;
-    opacity: 1;
-  }
+  .wrapper {
+    position: absolute;
+   
 
-  .board {
-    display: flex;
-    flex-wrap: wrap;
-    height: 33vw;
-    width: 33vw;
-
-    min-width: 200px;
-    min-height: 200px;
-    .square {
+    .header {
       display: flex;
-      width: 32%;
-      height: 33%;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
+      justify-content: center;
+      gap: 12px;
 
-      color: white;
-      font-weight: 700;
-      font-size: 30px;
-      font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-        "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+      .score {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 12px;
+
+        .label {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+
+          background-color: aquamarine;
+          border-radius: 15%;
+
+          width: 20%;
+          min-width: 100px;
+          padding-inline: 20px;
+          padding-block: 8px;
+         
+         
+        }
+      }
+
+      .turn {
+        text-align: center;
+        width: 33vw;
+      }
     }
-    .full-border {
-      border-right: 2px solid #fff;
-      border-left: 2px solid #fff;
-      border-top: 2px solid #fff;
-      border-bottom: 2px solid #fff;
+   
+
+    .endgame {
+      position: absolute;
+
+      animation: fade-in 0.5s ease-in;
+      animation-fill-mode: forwards;
+      animation-delay: 1.5s;
+
+      background-color: red;
+
+      height: 0;
+      width: 0;
+      opacity: 0;
     }
 
-    .inline-border {
-      border-right: 2px solid #fff;
-      border-left: 2px solid #fff;
+    .board {
+      display: flex;
+      position: relative;
+      flex-wrap: wrap;
+      height: 33vw;
+      width: 33vw;
+
+      min-width: 200px;
+      min-height: 200px;
+      .square {
+        display: flex;
+        width: 32%;
+        height: 33%;
+        justify-content: center;
+        align-items: center;
+
+        color: white;
+        font-weight: 700;
+        font-size: 30px;
+        font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+          "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+      }
+      .full-border {
+        border-right: 2px solid #fff;
+        border-left: 2px solid #fff;
+        border-top: 2px solid #fff;
+        border-bottom: 2px solid #fff;
+      }
+
+      .inline-border {
+        border-right: 2px solid #fff;
+        border-left: 2px solid #fff;
+      }
+
+      .block-border {
+        border-top: 2px solid #fff;
+        border-bottom: 2px solid #fff;
+      }
     }
 
-    .block-border {
-      border-top: 2px solid #fff;
-      border-bottom: 2px solid #fff;
+    .board.fade-out {
+      animation: fade-out 0.5s ease-in;
+      animation-fill-mode: forwards;
+      animation-delay: 1.5s;
+      background-color: rgb(204, 204, 204);
+
+      opacity: 1;
     }
   }
 }

@@ -5334,6 +5334,7 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$element = _Browser_element;
+var $author$project$Model$Easy = {$: 'Easy'};
 var $author$project$Model$OnGoing = {$: 'OnGoing'};
 var $author$project$Model$Player1 = {$: 'Player1'};
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
@@ -5343,8 +5344,12 @@ var $author$project$Main$init = function (_v0) {
 		{
 			board: _List_fromArray(
 				[$elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing]),
+			crossesWon: 0,
 			currentPlayer: $author$project$Model$Player1,
-			gameState: $author$project$Model$OnGoing
+			errMsg: $elm$core$Maybe$Nothing,
+			gameMode: $author$project$Model$Easy,
+			gameState: $author$project$Model$OnGoing,
+			noughtsWon: 0
 		},
 		$elm$core$Platform$Cmd$none);
 };
@@ -6278,9 +6283,18 @@ var $author$project$Update$update = F2(
 						_Utils_update(
 							model,
 							{
-								gameState: function () {
+								crossesWon: function () {
 									var _v1 = ds.data + 1;
-									switch (_v1) {
+									if (_v1 === 2) {
+										return model.crossesWon + 1;
+									} else {
+										return model.crossesWon;
+									}
+								}(),
+								errMsg: $elm$core$Maybe$Just(''),
+								gameState: function () {
+									var _v2 = ds.data + 1;
+									switch (_v2) {
 										case 0:
 											return model.gameState;
 										case 1:
@@ -6290,17 +6304,45 @@ var $author$project$Update$update = F2(
 										default:
 											return $author$project$Model$Win;
 									}
+								}(),
+								noughtsWon: function () {
+									var _v3 = ds.data + 1;
+									if (_v3 === 3) {
+										return model.noughtsWon + 1;
+									} else {
+										return model.noughtsWon;
+									}
 								}()
 							}),
 						$elm$core$Platform$Cmd$none);
 				} else {
-					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+					var x = msg.a.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								errMsg: function () {
+									switch (x.$) {
+										case 'BadBody':
+											return $elm$core$Maybe$Just('BadBody');
+										case 'BadUrl':
+											return $elm$core$Maybe$Just('BadUrl');
+										case 'Timeout':
+											return $elm$core$Maybe$Just('Timeout');
+										case 'NetworkError':
+											return $elm$core$Maybe$Just('NetworkErrored');
+										default:
+											return $elm$core$Maybe$Just('BadStatus');
+									}
+								}()
+							}),
+						$elm$core$Platform$Cmd$none);
 				}
 			default:
 				var id = msg.a;
-				var _v2 = A2($author$project$Utils$getElementByIndex, model.board, id);
-				if (_v2.$ === 'Just') {
-					var val = _v2.a;
+				var _v5 = A2($author$project$Utils$getElementByIndex, model.board, id);
+				if (_v5.$ === 'Just') {
+					var val = _v5.a;
 					if (val.$ === 'Nothing') {
 						var newBoard = A2(
 							$elm$core$List$indexedMap,
@@ -6320,8 +6362,8 @@ var $author$project$Update$update = F2(
 								{
 									board: newBoard,
 									currentPlayer: function () {
-										var _v4 = model.currentPlayer;
-										if (_v4.$ === 'Player2') {
+										var _v7 = model.currentPlayer;
+										if (_v7.$ === 'Player2') {
 											return $author$project$Model$Player1;
 										} else {
 											return $author$project$Model$Player2;
@@ -6367,6 +6409,7 @@ var $elm$html$Html$Events$onClick = function (msg) {
 		'click',
 		$elm$json$Json$Decode$succeed(msg));
 };
+var $elm$html$Html$span = _VirtualDom_node('span');
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $author$project$Main$view = function (model) {
@@ -6382,88 +6425,217 @@ var $author$project$Main$view = function (model) {
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('turn')
+						$elm$html$Html$Attributes$class('wrapper')
 					]),
 				_List_fromArray(
 					[
-						$elm$html$Html$text(
-						function () {
-							var _v0 = model.gameState;
-							switch (_v0.$) {
-								case 'OnGoing':
-									return $author$project$Model$fillSquare(
-										$elm$core$Maybe$Just(model.currentPlayer)) + ' Turn';
-								case 'Draw':
-									return 'Draw';
-								default:
-									return $author$project$Model$fillSquare(
-										function () {
-											var _v1 = model.currentPlayer;
-											if (_v1.$ === 'Player1') {
-												return $elm$core$Maybe$Just($author$project$Model$Player2);
-											} else {
-												return $elm$core$Maybe$Just($author$project$Model$Player1);
-											}
-										}()) + ' Won';
-							}
-						}())
-					])),
-				A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class(
-						'board' + function () {
-							var _v2 = model.gameState;
-							if (_v2.$ === 'OnGoing') {
-								return '';
-							} else {
-								return ' fade-out';
-							}
-						}())
-					]),
-				A2(
-					$elm$core$List$indexedMap,
-					F2(
-						function (i, x) {
-							return A2(
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('header')
+							]),
+						_List_fromArray(
+							[
+								A2(
 								$elm$html$Html$div,
 								_List_fromArray(
 									[
-										$elm$html$Html$Attributes$class(
-										'square' + function () {
-											switch (i) {
-												case 1:
-													return ' inline-border';
-												case 3:
-													return ' block-border';
-												case 4:
-													return ' full-border';
-												case 5:
-													return ' block-border';
-												case 7:
-													return ' inline-border';
-												default:
-													return '';
-											}
-										}()),
-										function () {
-										var _v4 = model.gameState;
-										if (_v4.$ === 'OnGoing') {
-											return $elm$html$Html$Events$onClick(
-												$author$project$Model$MarkSquare(i));
-										} else {
-											return $elm$html$Html$Events$onClick($author$project$Model$DoNothing);
-										}
-									}()
+										$elm$html$Html$Attributes$class('difficulty')
+									]),
+								_List_Nil),
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('score')
+									]),
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$div,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('label')
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('X'),
+												function () {
+												var _v0 = model.crossesWon;
+												if (!_v0) {
+													return A2(
+														$elm$html$Html$span,
+														_List_Nil,
+														_List_fromArray(
+															[
+																$elm$html$Html$text('-')
+															]));
+												} else {
+													return A2(
+														$elm$html$Html$span,
+														_List_Nil,
+														_List_fromArray(
+															[
+																$elm$html$Html$text(
+																$elm$core$String$fromInt(model.crossesWon))
+															]));
+												}
+											}()
+											])),
+										A2(
+										$elm$html$Html$div,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('label')
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('O'),
+												function () {
+												var _v1 = model.noughtsWon;
+												if (!_v1) {
+													return A2(
+														$elm$html$Html$span,
+														_List_Nil,
+														_List_fromArray(
+															[
+																$elm$html$Html$text('-')
+															]));
+												} else {
+													return A2(
+														$elm$html$Html$span,
+														_List_Nil,
+														_List_fromArray(
+															[
+																$elm$html$Html$text(
+																$elm$core$String$fromInt(model.noughtsWon))
+															]));
+												}
+											}()
+											]))
+									])),
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('turn')
 									]),
 								_List_fromArray(
 									[
 										$elm$html$Html$text(
-										$author$project$Model$fillSquare(x))
-									]));
-						}),
-					model.board))
+										function () {
+											var _v2 = model.gameState;
+											if (_v2.$ === 'OnGoing') {
+												return $author$project$Model$fillSquare(
+													$elm$core$Maybe$Just(model.currentPlayer)) + ' Turn';
+											} else {
+												return 'Gameover';
+											}
+										}())
+									]))
+							])),
+						function () {
+						var _v3 = model.gameState;
+						switch (_v3.$) {
+							case 'OnGoing':
+								return A2(
+									$elm$html$Html$div,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('hide')
+										]),
+									_List_Nil);
+							case 'Draw':
+								return A2(
+									$elm$html$Html$div,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('endgame')
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text('Draw')
+										]));
+							default:
+								return A2(
+									$elm$html$Html$div,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('endgame')
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text(
+											$author$project$Model$fillSquare(
+												function () {
+													var _v4 = model.currentPlayer;
+													if (_v4.$ === 'Player1') {
+														return $elm$core$Maybe$Just($author$project$Model$Player2);
+													} else {
+														return $elm$core$Maybe$Just($author$project$Model$Player1);
+													}
+												}()) + ' Won')
+										]));
+						}
+					}(),
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class(
+								'board' + function () {
+									var _v5 = model.gameState;
+									if (_v5.$ === 'OnGoing') {
+										return '';
+									} else {
+										return ' fade-out';
+									}
+								}())
+							]),
+						A2(
+							$elm$core$List$indexedMap,
+							F2(
+								function (i, x) {
+									return A2(
+										$elm$html$Html$div,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class(
+												'square' + function () {
+													switch (i) {
+														case 1:
+															return ' inline-border';
+														case 3:
+															return ' block-border';
+														case 4:
+															return ' full-border';
+														case 5:
+															return ' block-border';
+														case 7:
+															return ' inline-border';
+														default:
+															return '';
+													}
+												}()),
+												function () {
+												var _v7 = model.gameState;
+												if (_v7.$ === 'OnGoing') {
+													return $elm$html$Html$Events$onClick(
+														$author$project$Model$MarkSquare(i));
+												} else {
+													return $elm$html$Html$Events$onClick($author$project$Model$DoNothing);
+												}
+											}()
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text(
+												$author$project$Model$fillSquare(x))
+											]));
+								}),
+							model.board))
+					]))
 			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$element(

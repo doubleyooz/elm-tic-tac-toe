@@ -62,12 +62,46 @@ update msg model =
 
                         _ ->
                             Win
+                , crossesWon =
+                    case ds.data + 1 of
+                        2 ->
+                            model.crossesWon + 1
+
+                        _ ->
+                            model.crossesWon
+                , noughtsWon =
+                    case ds.data + 1 of
+                        3 ->
+                            model.noughtsWon + 1
+
+                        _ ->
+                            model.noughtsWon
+                , errMsg = Just ""
               }
             , Cmd.none
             )
 
-        IsEndState (Err _) ->
-            ( model, Cmd.none )
+        IsEndState (Err x) ->
+            ( { model
+                | errMsg =
+                    case x of
+                        Http.BadBody _ ->
+                            Just "BadBody"
+
+                        Http.BadUrl _ ->
+                            Just "BadUrl"
+
+                        Http.Timeout ->
+                            Just "Timeout"
+
+                        Http.NetworkError ->
+                            Just "NetworkErrored"
+
+                        Http.BadStatus _ ->
+                            Just "BadStatus"
+              }
+            , Cmd.none
+            )
 
         MarkSquare id ->
             case getElementByIndex model.board id of

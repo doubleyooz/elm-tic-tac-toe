@@ -4,6 +4,19 @@ body {
   background-color: aqua;
 }
 
+@keyframes fade-out {
+  100% {
+    -webkit-transform: scale(0.4);
+    opacity: 0;
+  }
+}
+@keyframes fade-in {
+  100% {
+    width: 33vw;
+    height: 33vw;
+    opacity: 1;
+  }
+}
 .game-container {
   display: flex;
   flex-direction: column;
@@ -11,30 +24,60 @@ body {
   align-items: center;
   height: 100vh;
 }
-@keyframes fade-out {
-  100% {
-    -webkit-transform: scale(0.4);
-    opacity: 0;
-  }
+.game-container .hide {
+  display: none;
 }
-.game-container .fade-out {
-  animation: fade-out 0.5s ease-in;
+.game-container .wrapper {
+  position: absolute;
+}
+.game-container .wrapper .header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.game-container .wrapper .header .score {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 12px;
+}
+.game-container .wrapper .header .score .label {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  background-color: aquamarine;
+  border-radius: 15%;
+  width: 20%;
+  min-width: 100px;
+  padding-inline: 20px;
+  padding-block: 8px;
+}
+.game-container .wrapper .header .turn {
+  text-align: center;
+  width: 33vw;
+}
+.game-container .wrapper .endgame {
+  position: absolute;
+  animation: fade-in 0.5s ease-in;
   animation-fill-mode: forwards;
   animation-delay: 1.5s;
-  background-color: rgb(204, 204, 204);
-  width: 100px;
-  height: 100px;
-  opacity: 1;
+  background-color: red;
+  height: 0;
+  width: 0;
+  opacity: 0;
 }
-.game-container .board {
+.game-container .wrapper .board {
   display: flex;
+  position: relative;
   flex-wrap: wrap;
   height: 33vw;
   width: 33vw;
   min-width: 200px;
   min-height: 200px;
 }
-.game-container .board .square {
+.game-container .wrapper .board .square {
   display: flex;
   width: 32%;
   height: 33%;
@@ -45,19 +88,26 @@ body {
   font-size: 30px;
   font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande", "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
 }
-.game-container .board .full-border {
+.game-container .wrapper .board .full-border {
   border-right: 2px solid #fff;
   border-left: 2px solid #fff;
   border-top: 2px solid #fff;
   border-bottom: 2px solid #fff;
 }
-.game-container .board .inline-border {
+.game-container .wrapper .board .inline-border {
   border-right: 2px solid #fff;
   border-left: 2px solid #fff;
 }
-.game-container .board .block-border {
+.game-container .wrapper .board .block-border {
   border-top: 2px solid #fff;
   border-bottom: 2px solid #fff;
+}
+.game-container .wrapper .board.fade-out {
+  animation: fade-out 0.5s ease-in;
+  animation-fill-mode: forwards;
+  animation-delay: 1.5s;
+  background-color: rgb(204, 204, 204);
+  opacity: 1;
 }
 
 /*# sourceMappingURL=index.css.map */

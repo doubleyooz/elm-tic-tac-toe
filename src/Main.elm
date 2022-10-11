@@ -4,7 +4,7 @@ import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Model exposing (GameState(..), Model, Msg(..), Player(..), fillSquare)
+import Model exposing (GameMode(..), GameState(..), Model, Msg(..), Player(..), fillSquare)
 import Update exposing (update)
 import Utils exposing (getElementByIndex, getLast)
 
@@ -23,6 +23,10 @@ init _ =
     ( { board = [ Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing ]
       , currentPlayer = Player1
       , gameState = OnGoing
+      , gameMode = Easy
+      , errMsg = Nothing
+      , crossesWon = 0
+      , noughtsWon = 0
       }
     , Cmd.none
     )
@@ -45,74 +49,108 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
     div [ class "game-container" ]
-        [ div [ class "turn" ]
-            [ text
-                (case model.gameState of
-                    OnGoing ->
-                        fillSquare (Just model.currentPlayer) ++ " Turn"
-
-                    Draw ->
-                        "Draw"
-
-                    Win ->
-                        fillSquare
-                            (case model.currentPlayer of
-                                Player1 ->
-                                    Just Player2
-
-                                Player2 ->
-                                    Just Player1
-                            )
-                            ++ " Won"
-                )
-            ]
-        , div [class ""] []
-        , div
-            [ class
-                ("board"
-                    ++ (case model.gameState of
-                            OnGoing ->
-                                ""
+        [ div [ class "wrapper" ]
+            [ div [ class "header" ]
+                [ div [ class "difficulty" ] []
+                , div [ class "score" ]
+                    [ div [ class "label" ]
+                        [ text "X"
+                        , case model.crossesWon of
+                            0 ->
+                                span [] [ text "-" ]
 
                             _ ->
-                                " fade-out"
-                       )
-                )
-            ]
-            (List.indexedMap
-                (\i x ->
-                    div
-                        [ class
-                            ("square"
-                                ++ (case i of
-                                        1 ->
-                                            " inline-border"
-
-                                        3 ->
-                                            " block-border"
-
-                                        4 ->
-                                            " full-border"
-
-                                        5 ->
-                                            " block-border"
-
-                                        7 ->
-                                            " inline-border"
-
-                                        _ ->
-                                            ""
-                                   )
-                            )
-                        , case model.gameState of
-                            OnGoing ->
-                                onClick (MarkSquare i)
-
-                            _ ->
-                                onClick DoNothing
+                                span [] [ text (String.fromInt model.crossesWon) ]
                         ]
-                        [ text (fillSquare x) ]
+                    , div [ class "label" ]
+                        [ text "O"
+                        , case model.noughtsWon of
+                            0 ->
+                                span [] [ text "-" ]
+
+                            _ ->
+                                span [] [ text (String.fromInt model.noughtsWon) ]
+                        ]
+                    ]
+                , div [ class "turn" ]
+                    [ text
+                        (case model.gameState of
+                            OnGoing ->
+                                fillSquare (Just model.currentPlayer) ++ " Turn"
+
+                            _ ->
+                                "Gameover"
+                        )
+                    ]
+                ]
+            , case model.gameState of
+                OnGoing ->
+                    div [ class "hide" ] []
+
+                Draw ->
+                    div [ class "endgame" ] [ text "Draw" ]
+
+                Win ->
+                    div [ class "endgame" ]
+                        [ text
+                            (fillSquare
+                                (case model.currentPlayer of
+                                    Player1 ->
+                                        Just Player2
+
+                                    Player2 ->
+                                        Just Player1
+                                )
+                                ++ " Won"
+                            )
+                        ]
+            , div
+                [ class
+                    ("board"
+                        ++ (case model.gameState of
+                                OnGoing ->
+                                    ""
+
+                                _ ->
+                                    " fade-out"
+                           )
+                    )
+                ]
+                (List.indexedMap
+                    (\i x ->
+                        div
+                            [ class
+                                ("square"
+                                    ++ (case i of
+                                            1 ->
+                                                " inline-border"
+
+                                            3 ->
+                                                " block-border"
+
+                                            4 ->
+                                                " full-border"
+
+                                            5 ->
+                                                " block-border"
+
+                                            7 ->
+                                                " inline-border"
+
+                                            _ ->
+                                                ""
+                                       )
+                                )
+                            , case model.gameState of
+                                OnGoing ->
+                                    onClick (MarkSquare i)
+
+                                _ ->
+                                    onClick DoNothing
+                            ]
+                            [ text (fillSquare x) ]
+                    )
+                    model.board
                 )
-                model.board
-            )
+            ]
         ]
