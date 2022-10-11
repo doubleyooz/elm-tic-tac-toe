@@ -6387,7 +6387,7 @@ var $author$project$Update$update = F2(
 						return _Utils_Tuple2(
 							_Utils_update(
 								model,
-								{board: newBoard, gameState: $author$project$Model$OnGoing}),
+								{board: newBoard}),
 							$author$project$Update$isEndStateRequest(newBoard));
 					} else {
 						return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -6499,7 +6499,13 @@ var $author$project$Main$view = function (model) {
 											]),
 										_List_fromArray(
 											[
-												$elm$html$Html$text('X'),
+												A2(
+												$elm$html$Html$span,
+												_List_Nil,
+												_List_fromArray(
+													[
+														$elm$html$Html$text('X')
+													])),
 												function () {
 												var _v2 = model.crossesWon;
 												if (!_v2) {
@@ -6547,7 +6553,13 @@ var $author$project$Main$view = function (model) {
 											]),
 										_List_fromArray(
 											[
-												$elm$html$Html$text('O'),
+												A2(
+												$elm$html$Html$span,
+												_List_Nil,
+												_List_fromArray(
+													[
+														$elm$html$Html$text('O')
+													])),
 												function () {
 												var _v5 = model.noughtsWon;
 												if (!_v5) {
@@ -6587,8 +6599,7 @@ var $author$project$Main$view = function (model) {
 													return $author$project$Model$fillSquare(
 														$elm$core$Maybe$Just(model.currentPlayer)) + ' Turn';
 												case 'Beginning':
-													return $author$project$Model$fillSquare(
-														$elm$core$Maybe$Just(model.currentPlayer)) + ' Turn';
+													return 'Start game or select player';
 												default:
 													return 'Gameover';
 											}
@@ -6734,7 +6745,25 @@ var $author$project$Main$view = function (model) {
 									[
 										$elm$html$Html$text('Restart game')
 									]))
-							]))
+							])),
+						function () {
+						var _v12 = model.errMsg;
+						if (_v12.$ === 'Just') {
+							var str = _v12.a;
+							return A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('error')
+									]),
+								_List_fromArray(
+									[
+										$elm$html$Html$text(str)
+									]));
+						} else {
+							return A2($elm$html$Html$div, _List_Nil, _List_Nil);
+						}
+					}()
 					]))
 			]));
 };

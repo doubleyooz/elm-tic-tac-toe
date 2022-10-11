@@ -151,7 +151,7 @@ update msg model =
                             in
                             ( { model
                                 | board = newBoard
-                                , gameState = OnGoing
+                                
                               }
                             , isEndStateRequest newBoard
                             )

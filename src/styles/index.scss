@@ -40,6 +40,7 @@ body {
       align-items: center;
       justify-content: center;
       gap: 12px;
+      margin-bottom: 5px;
 
       .score {
         display: flex;
@@ -52,12 +53,9 @@ body {
           flex-direction: row;
           justify-content: space-between;
 
-          
-          
           border-top: 1px solid #fff;
           border-right: 1px solid #fff;
           border-left: 1px solid #fff;
-          
 
           border-radius: 15%;
 
@@ -65,6 +63,21 @@ body {
           min-width: 100px;
           padding-inline: 20px;
           padding-block: 8px;
+
+          @media screen and (max-width: 800px) {
+            min-width: 80px;
+            padding-inline: 15px;
+          }
+
+          @media screen and (max-width: 700px) {
+            min-width: 70px;
+            padding-inline: 12px;
+          }
+
+          @media screen and (max-width: 600px) {
+            min-width: 50px;
+            padding-inline: 10px;
+          }
         }
 
         .selected {
@@ -95,6 +108,11 @@ body {
       height: 0;
       width: 0;
       opacity: 0;
+
+      @media screen and (max-width: 610px) {
+        min-width: 200px;
+        min-height: 200px;
+      }
     }
 
     .board {
@@ -150,13 +168,26 @@ body {
       display: flex;
       justify-content: center;
       align-items: center;
-      
+
       margin-top: 20px;
       span {
         color: #062f888f;
         &:hover {
           color: #f3f6fe;
         }
+      }
+    }
+
+    .error {
+      display: flex;
+      justify-content: end;
+     
+      font-size: 10px;
+      color: red;
+
+      @media screen and (max-width: 750px) {
+        justify-content: center;
+        margin-top: 2px;
       }
     }
   }

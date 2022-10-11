@@ -36,6 +36,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 12px;
+  margin-bottom: 5px;
 }
 .game-container .wrapper .header .score {
   display: flex;
@@ -55,6 +56,24 @@ body {
   min-width: 100px;
   padding-inline: 20px;
   padding-block: 8px;
+}
+@media screen and (max-width: 800px) {
+  .game-container .wrapper .header .score .label {
+    min-width: 80px;
+    padding-inline: 15px;
+  }
+}
+@media screen and (max-width: 700px) {
+  .game-container .wrapper .header .score .label {
+    min-width: 70px;
+    padding-inline: 12px;
+  }
+}
+@media screen and (max-width: 600px) {
+  .game-container .wrapper .header .score .label {
+    min-width: 50px;
+    padding-inline: 10px;
+  }
 }
 .game-container .wrapper .header .score .selected {
   border-bottom: 1px solid #051546;
@@ -76,6 +95,12 @@ body {
   height: 0;
   width: 0;
   opacity: 0;
+}
+@media screen and (max-width: 610px) {
+  .game-container .wrapper .endgame {
+    min-width: 200px;
+    min-height: 200px;
+  }
 }
 .game-container .wrapper .board {
   display: flex;
@@ -129,6 +154,18 @@ body {
 }
 .game-container .wrapper .reset span:hover {
   color: #f3f6fe;
+}
+.game-container .wrapper .error {
+  display: flex;
+  justify-content: end;
+  font-size: 10px;
+  color: red;
+}
+@media screen and (max-width: 750px) {
+  .game-container .wrapper .error {
+    justify-content: center;
+    margin-top: 2px;
+  }
 }
 
 /*# sourceMappingURL=index.css.map */

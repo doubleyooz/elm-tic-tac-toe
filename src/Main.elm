@@ -73,7 +73,7 @@ view model =
                                     DoNothing
                             )
                         ]
-                        [ text "X"
+                        [ span [] [ text "X" ]
                         , case model.crossesWon of
                             0 ->
                                 span [] [ text "-" ]
@@ -101,7 +101,7 @@ view model =
                                     DoNothing
                             )
                         ]
-                        [ text "O"
+                        [ span [] [ text "O" ]
                         , case model.noughtsWon of
                             0 ->
                                 span [] [ text "-" ]
@@ -117,7 +117,7 @@ view model =
                                 fillSquare (Just model.currentPlayer) ++ " Turn"
 
                             Beginning ->
-                                fillSquare (Just model.currentPlayer) ++ " Turn"
+                                "Start game or select player"
 
                             _ ->
                                 "Gameover"
@@ -202,5 +202,11 @@ view model =
                     model.board
                 )
             , div [ class "reset" ] [ span [ onClick Reset ] [ text "Restart game" ] ]
+            , case model.errMsg of
+                Just str ->
+                    div [ class "error" ] [ text str ]
+
+                Nothing ->
+                    div [] []
             ]
         ]
