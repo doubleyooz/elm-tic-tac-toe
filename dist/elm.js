@@ -5334,8 +5334,8 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$element = _Browser_element;
+var $author$project$Model$Beginning = {$: 'Beginning'};
 var $author$project$Model$Easy = {$: 'Easy'};
-var $author$project$Model$OnGoing = {$: 'OnGoing'};
 var $author$project$Model$Player1 = {$: 'Player1'};
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
@@ -5348,7 +5348,7 @@ var $author$project$Main$init = function (_v0) {
 			currentPlayer: $author$project$Model$Player1,
 			errMsg: $elm$core$Maybe$Nothing,
 			gameMode: $author$project$Model$Easy,
-			gameState: $author$project$Model$OnGoing,
+			gameState: $author$project$Model$Beginning,
 			noughtsWon: 0
 		},
 		$elm$core$Platform$Cmd$none);
@@ -5358,6 +5358,7 @@ var $author$project$Main$subscriptions = function (model) {
 	return $elm$core$Platform$Sub$batch(_List_Nil);
 };
 var $author$project$Model$Draw = {$: 'Draw'};
+var $author$project$Model$OnGoing = {$: 'OnGoing'};
 var $author$project$Model$Player2 = {$: 'Player2'};
 var $author$project$Model$Win = {$: 'Win'};
 var $elm$core$List$head = function (list) {
@@ -6291,10 +6292,18 @@ var $author$project$Update$update = F2(
 										return model.crossesWon;
 									}
 								}(),
+								currentPlayer: function () {
+									var _v2 = model.currentPlayer;
+									if (_v2.$ === 'Player2') {
+										return $author$project$Model$Player1;
+									} else {
+										return $author$project$Model$Player2;
+									}
+								}(),
 								errMsg: $elm$core$Maybe$Just(''),
 								gameState: function () {
-									var _v2 = ds.data + 1;
-									switch (_v2) {
+									var _v3 = ds.data + 1;
+									switch (_v3) {
 										case 0:
 											return model.gameState;
 										case 1:
@@ -6306,8 +6315,8 @@ var $author$project$Update$update = F2(
 									}
 								}(),
 								noughtsWon: function () {
-									var _v3 = ds.data + 1;
-									if (_v3 === 3) {
+									var _v4 = ds.data + 1;
+									if (_v4 === 3) {
 										return model.noughtsWon + 1;
 									} else {
 										return model.noughtsWon;
@@ -6347,14 +6356,21 @@ var $author$project$Update$update = F2(
 								[$elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing]),
 							currentPlayer: $author$project$Model$Player1,
 							errMsg: $elm$core$Maybe$Nothing,
-							gameState: $author$project$Model$OnGoing
+							gameState: $author$project$Model$Beginning
 						}),
+					$elm$core$Platform$Cmd$none);
+			case 'SelectPlayer':
+				var player = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{currentPlayer: player}),
 					$elm$core$Platform$Cmd$none);
 			default:
 				var id = msg.a;
-				var _v5 = A2($author$project$Utils$getElementByIndex, model.board, id);
-				if (_v5.$ === 'Just') {
-					var val = _v5.a;
+				var _v6 = A2($author$project$Utils$getElementByIndex, model.board, id);
+				if (_v6.$ === 'Just') {
+					var val = _v6.a;
 					if (val.$ === 'Nothing') {
 						var newBoard = A2(
 							$elm$core$List$indexedMap,
@@ -6371,17 +6387,7 @@ var $author$project$Update$update = F2(
 						return _Utils_Tuple2(
 							_Utils_update(
 								model,
-								{
-									board: newBoard,
-									currentPlayer: function () {
-										var _v7 = model.currentPlayer;
-										if (_v7.$ === 'Player2') {
-											return $author$project$Model$Player1;
-										} else {
-											return $author$project$Model$Player2;
-										}
-									}()
-								}),
+								{board: newBoard, gameState: $author$project$Model$OnGoing}),
 							$author$project$Update$isEndStateRequest(newBoard));
 					} else {
 						return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -6396,6 +6402,9 @@ var $author$project$Model$MarkSquare = function (a) {
 	return {$: 'MarkSquare', a: a};
 };
 var $author$project$Model$Reset = {$: 'Reset'};
+var $author$project$Model$SelectPlayer = function (a) {
+	return {$: 'SelectPlayer', a: a};
+};
 var $elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
 		return A2(
@@ -6469,14 +6478,31 @@ var $author$project$Main$view = function (model) {
 										$elm$html$Html$div,
 										_List_fromArray(
 											[
-												$elm$html$Html$Attributes$class('label')
+												$elm$html$Html$Attributes$class(
+												'label' + function () {
+													var _v0 = model.currentPlayer;
+													if (_v0.$ === 'Player1') {
+														return ' selected';
+													} else {
+														return '';
+													}
+												}()),
+												$elm$html$Html$Events$onClick(
+												function () {
+													var _v1 = model.gameState;
+													if (_v1.$ === 'Beginning') {
+														return $author$project$Model$SelectPlayer($author$project$Model$Player1);
+													} else {
+														return $author$project$Model$DoNothing;
+													}
+												}())
 											]),
 										_List_fromArray(
 											[
 												$elm$html$Html$text('X'),
 												function () {
-												var _v0 = model.crossesWon;
-												if (!_v0) {
+												var _v2 = model.crossesWon;
+												if (!_v2) {
 													return A2(
 														$elm$html$Html$span,
 														_List_Nil,
@@ -6500,14 +6526,31 @@ var $author$project$Main$view = function (model) {
 										$elm$html$Html$div,
 										_List_fromArray(
 											[
-												$elm$html$Html$Attributes$class('label')
+												$elm$html$Html$Attributes$class(
+												'label' + function () {
+													var _v3 = model.currentPlayer;
+													if (_v3.$ === 'Player2') {
+														return ' selected';
+													} else {
+														return '';
+													}
+												}()),
+												$elm$html$Html$Events$onClick(
+												function () {
+													var _v4 = model.gameState;
+													if (_v4.$ === 'Beginning') {
+														return $author$project$Model$SelectPlayer($author$project$Model$Player2);
+													} else {
+														return $author$project$Model$DoNothing;
+													}
+												}())
 											]),
 										_List_fromArray(
 											[
 												$elm$html$Html$text('O'),
 												function () {
-												var _v1 = model.noughtsWon;
-												if (!_v1) {
+												var _v5 = model.noughtsWon;
+												if (!_v5) {
 													return A2(
 														$elm$html$Html$span,
 														_List_Nil,
@@ -6538,27 +6581,23 @@ var $author$project$Main$view = function (model) {
 									[
 										$elm$html$Html$text(
 										function () {
-											var _v2 = model.gameState;
-											if (_v2.$ === 'OnGoing') {
-												return $author$project$Model$fillSquare(
-													$elm$core$Maybe$Just(model.currentPlayer)) + ' Turn';
-											} else {
-												return 'Gameover';
+											var _v6 = model.gameState;
+											switch (_v6.$) {
+												case 'OnGoing':
+													return $author$project$Model$fillSquare(
+														$elm$core$Maybe$Just(model.currentPlayer)) + ' Turn';
+												case 'Beginning':
+													return $author$project$Model$fillSquare(
+														$elm$core$Maybe$Just(model.currentPlayer)) + ' Turn';
+												default:
+													return 'Gameover';
 											}
 										}())
 									]))
 							])),
 						function () {
-						var _v3 = model.gameState;
-						switch (_v3.$) {
-							case 'OnGoing':
-								return A2(
-									$elm$html$Html$div,
-									_List_fromArray(
-										[
-											$elm$html$Html$Attributes$class('hide')
-										]),
-									_List_Nil);
+						var _v7 = model.gameState;
+						switch (_v7.$) {
 							case 'Draw':
 								return A2(
 									$elm$html$Html$div,
@@ -6577,7 +6616,7 @@ var $author$project$Main$view = function (model) {
 													$elm$html$Html$text('Draw')
 												]))
 										]));
-							default:
+							case 'Win':
 								return A2(
 									$elm$html$Html$div,
 									_List_fromArray(
@@ -6595,8 +6634,8 @@ var $author$project$Main$view = function (model) {
 													$elm$html$Html$text(
 													$author$project$Model$fillSquare(
 														function () {
-															var _v4 = model.currentPlayer;
-															if (_v4.$ === 'Player1') {
+															var _v8 = model.currentPlayer;
+															if (_v8.$ === 'Player1') {
 																return $elm$core$Maybe$Just($author$project$Model$Player2);
 															} else {
 																return $elm$core$Maybe$Just($author$project$Model$Player1);
@@ -6604,6 +6643,14 @@ var $author$project$Main$view = function (model) {
 														}()) + ' Won')
 												]))
 										]));
+							default:
+								return A2(
+									$elm$html$Html$div,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('hide')
+										]),
+									_List_Nil);
 						}
 					}(),
 						A2(
@@ -6612,11 +6659,14 @@ var $author$project$Main$view = function (model) {
 							[
 								$elm$html$Html$Attributes$class(
 								'board' + function () {
-									var _v5 = model.gameState;
-									if (_v5.$ === 'OnGoing') {
-										return '';
-									} else {
-										return ' fade-out';
+									var _v9 = model.gameState;
+									switch (_v9.$) {
+										case 'OnGoing':
+											return '';
+										case 'Beginning':
+											return '';
+										default:
+											return ' fade-out';
 									}
 								}())
 							]),
@@ -6646,12 +6696,16 @@ var $author$project$Main$view = function (model) {
 													}
 												}()),
 												function () {
-												var _v7 = model.gameState;
-												if (_v7.$ === 'OnGoing') {
-													return $elm$html$Html$Events$onClick(
-														$author$project$Model$MarkSquare(i));
-												} else {
-													return $elm$html$Html$Events$onClick($author$project$Model$DoNothing);
+												var _v11 = model.gameState;
+												switch (_v11.$) {
+													case 'OnGoing':
+														return $elm$html$Html$Events$onClick(
+															$author$project$Model$MarkSquare(i));
+													case 'Beginning':
+														return $elm$html$Html$Events$onClick(
+															$author$project$Model$MarkSquare(i));
+													default:
+														return $elm$html$Html$Events$onClick($author$project$Model$DoNothing);
 												}
 											}()
 											]),

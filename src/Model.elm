@@ -18,6 +18,7 @@ type GameState
     = Draw
     | Win
     | OnGoing
+    | Beginning
 
 
 type GameMode
@@ -66,4 +67,5 @@ type
     = MarkSquare Int
     | IsEndState (Result Http.Error Data)
     | DoNothing
+    | SelectPlayer Player
     | Reset

@@ -22,7 +22,7 @@ init : () -> ( Model, Cmd Msg )
 init _ =
     ( { board = [ Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing ]
       , currentPlayer = Player1
-      , gameState = OnGoing
+      , gameState = Beginning
       , gameMode = Easy
       , errMsg = Nothing
       , crossesWon = 0
@@ -53,7 +53,26 @@ view model =
             [ div [ class "header" ]
                 [ div [ class "difficulty" ] []
                 , div [ class "score" ]
-                    [ div [ class "label" ]
+                    [ div
+                        [ class
+                            ("label"
+                                ++ (case model.currentPlayer of
+                                        Player1 ->
+                                            " selected"
+
+                                        _ ->
+                                            ""
+                                   )
+                            )
+                        , onClick
+                            (case model.gameState of
+                                Beginning ->
+                                    SelectPlayer Player1
+
+                                _ ->
+                                    DoNothing
+                            )
+                        ]
                         [ text "X"
                         , case model.crossesWon of
                             0 ->
@@ -62,7 +81,26 @@ view model =
                             _ ->
                                 span [] [ text (String.fromInt model.crossesWon) ]
                         ]
-                    , div [ class "label" ]
+                    , div
+                        [ class
+                            ("label"
+                                ++ (case model.currentPlayer of
+                                        Player2 ->
+                                            " selected"
+
+                                        _ ->
+                                            ""
+                                   )
+                            )
+                        , onClick
+                            (case model.gameState of
+                                Beginning ->
+                                    SelectPlayer Player2
+
+                                _ ->
+                                    DoNothing
+                            )
+                        ]
                         [ text "O"
                         , case model.noughtsWon of
                             0 ->
@@ -78,15 +116,15 @@ view model =
                             OnGoing ->
                                 fillSquare (Just model.currentPlayer) ++ " Turn"
 
+                            Beginning ->
+                                fillSquare (Just model.currentPlayer) ++ " Turn"
+
                             _ ->
                                 "Gameover"
                         )
                     ]
                 ]
             , case model.gameState of
-                OnGoing ->
-                    div [ class "hide" ] []
-
                 Draw ->
                     div [ class "endgame", onClick Reset ] [ span [] [ text "Draw" ] ]
 
@@ -106,11 +144,17 @@ view model =
                                 )
                             ]
                         ]
+
+                _ ->
+                    div [ class "hide" ] []
             , div
                 [ class
                     ("board"
                         ++ (case model.gameState of
                                 OnGoing ->
+                                    ""
+
+                                Beginning ->
                                     ""
 
                                 _ ->
@@ -147,6 +191,9 @@ view model =
                                 OnGoing ->
                                     onClick (MarkSquare i)
 
+                                Beginning ->
+                                    onClick (MarkSquare i)
+
                                 _ ->
                                     onClick DoNothing
                             ]
@@ -154,6 +201,6 @@ view model =
                     )
                     model.board
                 )
-            , div [ class "reset" ] [ span [onClick Reset] [ text "Restart game" ] ]
+            , div [ class "reset" ] [ span [ onClick Reset ] [ text "Restart game" ] ]
             ]
         ]

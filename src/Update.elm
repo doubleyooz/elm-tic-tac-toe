@@ -62,6 +62,13 @@ update msg model =
 
                         _ ->
                             Win
+                , currentPlayer =
+                    case model.currentPlayer of
+                        Player2 ->
+                            Player1
+
+                        Player1 ->
+                            Player2
                 , crossesWon =
                     case ds.data + 1 of
                         2 ->
@@ -106,9 +113,16 @@ update msg model =
         Reset ->
             ( { model
                 | board = [ Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing ]
-                , gameState = OnGoing
+                , gameState = Beginning
                 , currentPlayer = Player1
                 , errMsg = Nothing
+              }
+            , Cmd.none
+            )
+
+        SelectPlayer player ->
+            ( { model
+                | currentPlayer = player
               }
             , Cmd.none
             )
@@ -137,13 +151,7 @@ update msg model =
                             in
                             ( { model
                                 | board = newBoard
-                                , currentPlayer =
-                                    case model.currentPlayer of
-                                        Player2 ->
-                                            Player1
-
-                                        Player1 ->
-                                            Player2
+                                , gameState = OnGoing
                               }
                             , isEndStateRequest newBoard
                             )

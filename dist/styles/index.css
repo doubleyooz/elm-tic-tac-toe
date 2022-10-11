@@ -47,12 +47,17 @@ body {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  background-color: aquamarine;
+  border-top: 1px solid #fff;
+  border-right: 1px solid #fff;
+  border-left: 1px solid #fff;
   border-radius: 15%;
   width: 20%;
   min-width: 100px;
   padding-inline: 20px;
   padding-block: 8px;
+}
+.game-container .wrapper .header .score .selected {
+  border-bottom: 1px solid #051546;
 }
 .game-container .wrapper .header .turn {
   text-align: center;
