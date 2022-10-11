@@ -6661,7 +6661,26 @@ var $author$project$Main$view = function (model) {
 												$author$project$Model$fillSquare(x))
 											]));
 								}),
-							model.board))
+							model.board)),
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('reset')
+							]),
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$span,
+								_List_fromArray(
+									[
+										$elm$html$Html$Events$onClick($author$project$Model$Reset)
+									]),
+								_List_fromArray(
+									[
+										$elm$html$Html$text('Restart game')
+									]))
+							]))
 					]))
 			]));
 };

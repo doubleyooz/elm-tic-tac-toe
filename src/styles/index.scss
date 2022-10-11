@@ -135,5 +135,19 @@ body {
 
       opacity: 1;
     }
+
+    .reset {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      
+      margin-top: 20px;
+      span {
+        color: #062f888f;
+        &:hover {
+          color: #f3f6fe;
+        }
+      }
+    }
   }
 }

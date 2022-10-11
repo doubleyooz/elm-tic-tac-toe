@@ -113,5 +113,17 @@ body {
   background-color: rgb(204, 204, 204);
   opacity: 1;
 }
+.game-container .wrapper .reset {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+.game-container .wrapper .reset span {
+  color: rgba(6, 47, 136, 0.5607843137);
+}
+.game-container .wrapper .reset span:hover {
+  color: #f3f6fe;
+}
 
 /*# sourceMappingURL=index.css.map */

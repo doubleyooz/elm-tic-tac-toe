@@ -154,5 +154,6 @@ view model =
                     )
                     model.board
                 )
+            , div [ class "reset" ] [ span [onClick Reset] [ text "Restart game" ] ]
             ]
         ]
