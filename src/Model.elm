@@ -12,6 +12,7 @@ type alias Model =
     , errMsg : Maybe String
     , crossesWon : Int
     , noughtsWon : Int
+    , dropMenu : Bool
     }
 
 
@@ -68,6 +69,8 @@ type
     = MarkSquare Int
     | IsEndState (Result Http.Error Data)
     | BestMove (Result Http.Error Data)
+    | DropMenu Bool
     | DoNothing
     | SelectPlayer Player
+    | ChangeMode GameMode
     | Reset

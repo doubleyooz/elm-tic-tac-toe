@@ -1,5 +1,6 @@
 module Main exposing (..)
 
+import Assets.Selected exposing (..)
 import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -28,6 +29,7 @@ init _ =
       , errMsg = Nothing
       , crossesWon = 0
       , noughtsWon = 0
+      , dropMenu = False
       }
     , Cmd.none
     )
@@ -52,7 +54,113 @@ view model =
     div [ class "game-container" ]
         [ div [ class "wrapper" ]
             [ div [ class "header" ]
-                [ div [ class "difficulty" ] []
+                [ div [ class "top" ]
+                    [ div
+                        [ class
+                            ("dropdown-menu "
+                                ++ (if model.dropMenu then
+                                        ""
+
+                                    else
+                                        "overflow-y-hidden"
+                                   )
+                            )
+                        ]
+                        [ span [ onClick (DropMenu (not model.dropMenu)) ]
+                            [ text
+                                (case model.gameMode of
+                                    Friend ->
+                                        "Against a friend"
+
+                                    Easy ->
+                                        "Easy"
+
+                                    Medium ->
+                                        "Medium"
+
+                                    Hard ->
+                                        "Hard"
+
+                                    Impossible ->
+                                        "Impossible"
+                                )
+                            ]
+                        , div [ class "options" ]
+                            [ case model.gameMode of
+                                Friend ->
+                                    div [ class "option" ]
+                                        [ div [ class "checkmark" ] [ selectedSvg "#000000" 0.5 ]
+                                        , span
+                                            [ class
+                                                "font-bold"
+                                            , onClick (ChangeMode Friend)
+                                            ]
+                                            [ text "Against a Friend" ]
+                                        ]
+
+                                _ ->
+                                    div [ class "pl-7" ] [ span [ onClick (ChangeMode Friend) ] [ text "Against a Friend" ] ]
+                            , case model.gameMode of
+                                Easy ->
+                                    div [ class "option" ]
+                                        [ div [ class "checkmark" ] [ selectedSvg "#000000" 0.5 ]
+                                        , span
+                                            [ class
+                                                "font-bold"
+                                            , onClick (ChangeMode Easy)
+                                            ]
+                                            [ text "Easy" ]
+                                        ]
+
+                                _ ->
+                                    div [ class "pl-7" ] [ span [ onClick (ChangeMode Easy) ] [ text "Easy" ] ]
+                            , case model.gameMode of
+                                Medium ->
+                                    div [ class "option" ]
+                                        [ div [ class "checkmark" ] [ selectedSvg "#000000" 0.5 ]
+                                        , span
+                                            [ class
+                                                "font-bold"
+                                            , onClick (ChangeMode Medium)
+                                            ]
+                                            [ text "Medium" ]
+                                        ]
+
+                                _ ->
+                                    div [ class "pl-7" ] [ span [ onClick (ChangeMode Medium) ] [ text "Medium" ] ]
+                            , case model.gameMode of
+                                Hard ->
+                                    div [ class "option" ]
+                                        [ div [ class "checkmark" ] [ selectedSvg "#000000" 0.5 ]
+                                        , span
+                                            [ class
+                                                "font-bold"
+                                            , onClick (ChangeMode Hard)
+                                            ]
+                                            [ text "Hard" ]
+                                        ]
+
+                                _ ->
+                                    div [ class "pl-7" ] [ span [ onClick (ChangeMode Hard) ] [ text "Hard" ] ]
+                            , case model.gameMode of
+                                Impossible ->
+                                    div [ class "option" ]
+                                        [ div [ class "checkmark" ] [ selectedSvg "#000000" 0.5 ]
+                                        , span
+                                            [ class
+                                                "font-bold"
+                                            , onClick (ChangeMode Impossible)
+                                            ]
+                                            [ text "Impossible" ]
+                                        ]
+
+                                _ ->
+                                    div [ class "pl-7" ] [ span [ onClick (ChangeMode Impossible) ] [ text "Impossible" ] ]
+                            ]
+                        ]
+                    , div [] [ text "share" ]
+                    ]
+                , div [ class "difficulty" ] []
                 , div [ class "score" ]
                     [ div
                         [ class

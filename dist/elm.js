@@ -5335,7 +5335,7 @@ var $elm$core$Task$perform = F2(
 	});
 var $elm$browser$Browser$element = _Browser_element;
 var $author$project$Model$Beginning = {$: 'Beginning'};
-var $author$project$Model$Easy = {$: 'Easy'};
+var $author$project$Model$Friend = {$: 'Friend'};
 var $author$project$Model$Player1 = {$: 'Player1'};
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
@@ -5346,10 +5346,12 @@ var $author$project$Main$init = function (_v0) {
 				[$elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing]),
 			crossesWon: 0,
 			currentPlayer: $author$project$Model$Player1,
+			dropMenu: false,
 			errMsg: $elm$core$Maybe$Nothing,
-			gameMode: $author$project$Model$Easy,
+			gameMode: $author$project$Model$Friend,
 			gameState: $author$project$Model$Beginning,
-			noughtsWon: 0
+			noughtsWon: 0,
+			selectedPlayer: $author$project$Model$Player1
 		},
 		$elm$core$Platform$Cmd$none);
 };
@@ -5361,51 +5363,95 @@ var $author$project$Model$Draw = {$: 'Draw'};
 var $author$project$Model$OnGoing = {$: 'OnGoing'};
 var $author$project$Model$Player2 = {$: 'Player2'};
 var $author$project$Model$Win = {$: 'Win'};
-var $elm$core$List$head = function (list) {
-	if (list.b) {
-		var x = list.a;
-		var xs = list.b;
-		return $elm$core$Maybe$Just(x);
-	} else {
-		return $elm$core$Maybe$Nothing;
-	}
+var $author$project$Model$BestMove = function (a) {
+	return {$: 'BestMove', a: a};
 };
-var $elm$core$List$tail = function (list) {
-	if (list.b) {
-		var x = list.a;
-		var xs = list.b;
-		return $elm$core$Maybe$Just(xs);
-	} else {
-		return $elm$core$Maybe$Nothing;
-	}
-};
-var $author$project$Utils$getElementByIndex = F2(
-	function (list, i) {
-		getElementByIndex:
-		while (true) {
-			if (!i) {
-				return $elm$core$List$head(list);
-			} else {
-				var $temp$list = function () {
-					var _v1 = $elm$core$List$tail(list);
-					if (_v1.$ === 'Just') {
-						var t = _v1.a;
-						return t;
-					} else {
-						return _List_Nil;
-					}
-				}(),
-					$temp$i = i - 1;
-				list = $temp$list;
-				i = $temp$i;
-				continue getElementByIndex;
-			}
-		}
+var $author$project$Model$Data = F2(
+	function (code, data) {
+		return {code: code, data: data};
 	});
-var $author$project$Model$IsEndState = function (a) {
-	return {$: 'IsEndState', a: a};
+var $elm$json$Json$Decode$field = _Json_decodeField;
+var $elm$json$Json$Decode$int = _Json_decodeInt;
+var $author$project$Update$bestMoveDecoder = A3(
+	$elm$json$Json$Decode$map2,
+	$author$project$Model$Data,
+	A2($elm$json$Json$Decode$field, 'code', $elm$json$Json$Decode$int),
+	A2($elm$json$Json$Decode$field, 'data', $elm$json$Json$Decode$int));
+var $author$project$Model$fillSquare = function (squareType) {
+	if (squareType.$ === 'Just') {
+		var player = squareType.a;
+		if (player.$ === 'Player1') {
+			return 'X';
+		} else {
+			return 'O';
+		}
+	} else {
+		return '';
+	}
 };
-var $author$project$Env$client = 'http://localhost:4000/v1/finalState';
+var $elm$json$Json$Encode$list = F2(
+	function (func, entries) {
+		return _Json_wrap(
+			A3(
+				$elm$core$List$foldl,
+				_Json_addEntry(func),
+				_Json_emptyArray(_Utils_Tuple0),
+				entries));
+	});
+var $elm$json$Json$Encode$object = function (pairs) {
+	return _Json_wrap(
+		A3(
+			$elm$core$List$foldl,
+			F2(
+				function (_v0, obj) {
+					var k = _v0.a;
+					var v = _v0.b;
+					return A3(_Json_addField, k, v, obj);
+				}),
+			_Json_emptyObject(_Utils_Tuple0),
+			pairs));
+};
+var $elm$json$Json$Encode$string = _Json_wrap;
+var $author$project$Update$bestMoveEncoder = F2(
+	function (board, currentPlayer) {
+		return $elm$json$Json$Encode$object(
+			_List_fromArray(
+				[
+					_Utils_Tuple2(
+					'board',
+					A2(
+						$elm$json$Json$Encode$list,
+						$elm$json$Json$Encode$string,
+						A2($elm$core$List$map, $author$project$Model$fillSquare, board))),
+					_Utils_Tuple2(
+					'values',
+					A2(
+						$elm$json$Json$Encode$list,
+						$elm$json$Json$Encode$string,
+						function () {
+							if (currentPlayer.$ === 'Player1') {
+								return _List_fromArray(
+									[
+										'',
+										$author$project$Model$fillSquare(
+										$elm$core$Maybe$Just($author$project$Model$Player1)),
+										$author$project$Model$fillSquare(
+										$elm$core$Maybe$Just($author$project$Model$Player2))
+									]);
+							} else {
+								return _List_fromArray(
+									[
+										'',
+										$author$project$Model$fillSquare(
+										$elm$core$Maybe$Just($author$project$Model$Player2)),
+										$author$project$Model$fillSquare(
+										$elm$core$Maybe$Just($author$project$Model$Player1))
+									]);
+							}
+						}()))
+				]));
+	});
+var $author$project$Env$bestMoveURL = 'http://localhost:4000/v1/move';
 var $elm$json$Json$Decode$decodeString = _Json_runOnString;
 var $elm$http$Http$BadStatus_ = F2(
 	function (a, b) {
@@ -6198,53 +6244,66 @@ var $elm$http$Http$post = function (r) {
 	return $elm$http$Http$request(
 		{body: r.body, expect: r.expect, headers: _List_Nil, method: 'POST', timeout: $elm$core$Maybe$Nothing, tracker: $elm$core$Maybe$Nothing, url: r.url});
 };
-var $author$project$Model$Data = F2(
-	function (code, data) {
-		return {code: code, data: data};
+var $author$project$Update$bestMoveRequest = F2(
+	function (board, currentPlayer) {
+		return $elm$http$Http$post(
+			{
+				body: $elm$http$Http$jsonBody(
+					A2($author$project$Update$bestMoveEncoder, board, currentPlayer)),
+				expect: A2($elm$http$Http$expectJson, $author$project$Model$BestMove, $author$project$Update$bestMoveDecoder),
+				url: $author$project$Env$bestMoveURL
+			});
 	});
-var $elm$json$Json$Decode$field = _Json_decodeField;
-var $elm$json$Json$Decode$int = _Json_decodeInt;
-var $author$project$Update$requestDecoder = A3(
+var $elm$core$List$head = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return $elm$core$Maybe$Just(x);
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $elm$core$List$tail = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return $elm$core$Maybe$Just(xs);
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $author$project$Utils$getElementByIndex = F2(
+	function (list, i) {
+		getElementByIndex:
+		while (true) {
+			if (!i) {
+				return $elm$core$List$head(list);
+			} else {
+				var $temp$list = function () {
+					var _v1 = $elm$core$List$tail(list);
+					if (_v1.$ === 'Just') {
+						var t = _v1.a;
+						return t;
+					} else {
+						return _List_Nil;
+					}
+				}(),
+					$temp$i = i - 1;
+				list = $temp$list;
+				i = $temp$i;
+				continue getElementByIndex;
+			}
+		}
+	});
+var $author$project$Model$IsEndState = function (a) {
+	return {$: 'IsEndState', a: a};
+};
+var $author$project$Update$endStateDecoder = A3(
 	$elm$json$Json$Decode$map2,
 	$author$project$Model$Data,
 	A2($elm$json$Json$Decode$field, 'code', $elm$json$Json$Decode$int),
 	A2($elm$json$Json$Decode$field, 'data', $elm$json$Json$Decode$int));
-var $author$project$Model$fillSquare = function (squareType) {
-	if (squareType.$ === 'Just') {
-		var player = squareType.a;
-		if (player.$ === 'Player1') {
-			return 'X';
-		} else {
-			return 'O';
-		}
-	} else {
-		return '';
-	}
-};
-var $elm$json$Json$Encode$list = F2(
-	function (func, entries) {
-		return _Json_wrap(
-			A3(
-				$elm$core$List$foldl,
-				_Json_addEntry(func),
-				_Json_emptyArray(_Utils_Tuple0),
-				entries));
-	});
-var $elm$json$Json$Encode$object = function (pairs) {
-	return _Json_wrap(
-		A3(
-			$elm$core$List$foldl,
-			F2(
-				function (_v0, obj) {
-					var k = _v0.a;
-					var v = _v0.b;
-					return A3(_Json_addField, k, v, obj);
-				}),
-			_Json_emptyObject(_Utils_Tuple0),
-			pairs));
-};
-var $elm$json$Json$Encode$string = _Json_wrap;
-var $author$project$Update$requestEncoder = function (board) {
+var $author$project$Update$endStateEncoder = function (board) {
 	return $elm$json$Json$Encode$object(
 		_List_fromArray(
 			[
@@ -6263,15 +6322,17 @@ var $author$project$Update$requestEncoder = function (board) {
 						['', 'X', 'O'])))
 			]));
 };
+var $author$project$Env$finalStateURL = 'http://localhost:4000/v1/finalState';
 var $author$project$Update$isEndStateRequest = function (board) {
 	return $elm$http$Http$post(
 		{
 			body: $elm$http$Http$jsonBody(
-				$author$project$Update$requestEncoder(board)),
-			expect: A2($elm$http$Http$expectJson, $author$project$Model$IsEndState, $author$project$Update$requestDecoder),
-			url: $author$project$Env$client
+				$author$project$Update$endStateEncoder(board)),
+			expect: A2($elm$http$Http$expectJson, $author$project$Model$IsEndState, $author$project$Update$endStateDecoder),
+			url: $author$project$Env$finalStateURL
 		});
 };
+var $elm$core$Debug$todo = _Debug_todo;
 var $author$project$Update$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
@@ -6279,31 +6340,32 @@ var $author$project$Update$update = F2(
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			case 'IsEndState':
 				if (msg.a.$ === 'Ok') {
-					var ds = msg.a.a;
+					var res = msg.a.a;
+					var nextPlayer = function () {
+						var _v6 = model.currentPlayer;
+						if (_v6.$ === 'Player2') {
+							return $author$project$Model$Player1;
+						} else {
+							return $author$project$Model$Player2;
+						}
+					}();
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
 								crossesWon: function () {
-									var _v1 = ds.data + 1;
+									var _v1 = res.data + 1;
 									if (_v1 === 2) {
 										return model.crossesWon + 1;
 									} else {
 										return model.crossesWon;
 									}
 								}(),
-								currentPlayer: function () {
-									var _v2 = model.currentPlayer;
-									if (_v2.$ === 'Player2') {
-										return $author$project$Model$Player1;
-									} else {
-										return $author$project$Model$Player2;
-									}
-								}(),
+								currentPlayer: nextPlayer,
 								errMsg: $elm$core$Maybe$Just(''),
 								gameState: function () {
-									var _v3 = ds.data + 1;
-									switch (_v3) {
+									var _v2 = res.data + 1;
+									switch (_v2) {
 										case 0:
 											return model.gameState;
 										case 1:
@@ -6315,15 +6377,27 @@ var $author$project$Update$update = F2(
 									}
 								}(),
 								noughtsWon: function () {
-									var _v4 = ds.data + 1;
-									if (_v4 === 3) {
+									var _v3 = res.data + 1;
+									if (_v3 === 3) {
 										return model.noughtsWon + 1;
 									} else {
 										return model.noughtsWon;
 									}
 								}()
 							}),
-						$elm$core$Platform$Cmd$none);
+						function () {
+							var _v4 = res.data + 1;
+							if (_v4 === 4) {
+								var _v5 = model.gameMode;
+								if (_v5.$ === 'Friend') {
+									return $elm$core$Platform$Cmd$none;
+								} else {
+									return A2($author$project$Update$bestMoveRequest, model.board, nextPlayer);
+								}
+							} else {
+								return $elm$core$Platform$Cmd$none;
+							}
+						}());
 				} else {
 					var x = msg.a.a;
 					return _Utils_Tuple2(
@@ -6339,7 +6413,7 @@ var $author$project$Update$update = F2(
 										case 'Timeout':
 											return $elm$core$Maybe$Just('Timeout');
 										case 'NetworkError':
-											return $elm$core$Maybe$Just('NetworkErrored');
+											return $elm$core$Maybe$Just('Lost connection to the server');
 										default:
 											return $elm$core$Maybe$Just('BadStatus');
 									}
@@ -6366,11 +6440,18 @@ var $author$project$Update$update = F2(
 						model,
 						{currentPlayer: player}),
 					$elm$core$Platform$Cmd$none);
-			default:
+			case 'ChangeMode':
+				var mode = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{gameMode: mode}),
+					$elm$core$Platform$Cmd$none);
+			case 'MarkSquare':
 				var id = msg.a;
-				var _v6 = A2($author$project$Utils$getElementByIndex, model.board, id);
-				if (_v6.$ === 'Just') {
-					var val = _v6.a;
+				var _v8 = A2($author$project$Utils$getElementByIndex, model.board, id);
+				if (_v8.$ === 'Just') {
+					var val = _v8.a;
 					if (val.$ === 'Nothing') {
 						var newBoard = A2(
 							$elm$core$List$indexedMap,
@@ -6395,12 +6476,67 @@ var $author$project$Update$update = F2(
 				} else {
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
+			case 'DropMenu':
+				var state = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{dropMenu: state}),
+					$elm$core$Platform$Cmd$none);
+			default:
+				if (msg.a.$ === 'Ok') {
+					var res = msg.a.a;
+					var _v11 = A2($author$project$Utils$getElementByIndex, model.board, res.data);
+					if (_v11.$ === 'Just') {
+						var val = _v11.a;
+						if (val.$ === 'Nothing') {
+							var newBoard = A2(
+								$elm$core$List$indexedMap,
+								F2(
+									function (i, x) {
+										if (x.$ === 'Just') {
+											var player = x.a;
+											return $elm$core$Maybe$Just(player);
+										} else {
+											return _Utils_eq(i, res.data) ? $elm$core$Maybe$Just(model.currentPlayer) : $elm$core$Maybe$Nothing;
+										}
+									}),
+								model.board);
+							return _Utils_Tuple2(
+								_Utils_update(
+									model,
+									{board: newBoard}),
+								$author$project$Update$isEndStateRequest(newBoard));
+						} else {
+							return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+						}
+					} else {
+						return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+					}
+				} else {
+					return _Debug_todo(
+						'Update',
+						{
+							start: {line: 262, column: 13},
+							end: {line: 262, column: 23}
+						})('branch \'BestMove (Err _)\' not implemented');
+				}
 		}
 	});
+var $author$project$Model$ChangeMode = function (a) {
+	return {$: 'ChangeMode', a: a};
+};
 var $author$project$Model$DoNothing = {$: 'DoNothing'};
+var $author$project$Model$DropMenu = function (a) {
+	return {$: 'DropMenu', a: a};
+};
+var $author$project$Model$Easy = {$: 'Easy'};
+var $author$project$Model$Hard = {$: 'Hard'};
+var $author$project$Model$Impossible = {$: 'Impossible'};
 var $author$project$Model$MarkSquare = function (a) {
 	return {$: 'MarkSquare', a: a};
 };
+var $author$project$Model$Medium = {$: 'Medium'};
 var $author$project$Model$Reset = {$: 'Reset'};
 var $author$project$Model$SelectPlayer = function (a) {
 	return {$: 'SelectPlayer', a: a};
@@ -6414,6 +6550,7 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
 var $elm$html$Html$div = _VirtualDom_node('div');
+var $elm$core$Basics$not = _Basics_not;
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 'Normal', a: a};
 };
@@ -6431,6 +6568,34 @@ var $elm$html$Html$Events$onClick = function (msg) {
 		'click',
 		$elm$json$Json$Decode$succeed(msg));
 };
+var $elm$svg$Svg$Attributes$d = _VirtualDom_attribute('d');
+var $elm$svg$Svg$Attributes$fill = _VirtualDom_attribute('fill');
+var $elm$core$String$fromFloat = _String_fromNumber;
+var $elm$svg$Svg$trustedNode = _VirtualDom_nodeNS('http://www.w3.org/2000/svg');
+var $elm$svg$Svg$path = $elm$svg$Svg$trustedNode('path');
+var $elm$svg$Svg$svg = $elm$svg$Svg$trustedNode('svg');
+var $elm$svg$Svg$Attributes$viewBox = _VirtualDom_attribute('viewBox');
+var $author$project$Assets$Selected$selectedSvg = F2(
+	function (colour, scale) {
+		return A2(
+			$elm$svg$Svg$svg,
+			_List_fromArray(
+				[
+					$elm$svg$Svg$Attributes$fill(colour),
+					$elm$svg$Svg$Attributes$viewBox(
+					'0 -10 ' + ($elm$core$String$fromFloat(scale * 100) + (' ' + $elm$core$String$fromFloat(scale * 100))))
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$svg$Svg$path,
+					_List_fromArray(
+						[
+							$elm$svg$Svg$Attributes$d('M 26.980469 5.9902344 A 1.0001 1.0001 0 0 0 26.292969 6.2929688 L 11 21.585938 L 4.7070312 15.292969 A 1.0001 1.0001 0 1 0 3.2929688 16.707031 L 10.292969 23.707031 A 1.0001 1.0001 0 0 0 11.707031 23.707031 L 27.707031 7.7070312 A 1.0001 1.0001 0 0 0 26.980469 5.9902344 z')
+						]),
+					_List_Nil)
+				]));
+	});
 var $elm$html$Html$span = _VirtualDom_node('span');
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
@@ -6463,6 +6628,352 @@ var $author$project$Main$view = function (model) {
 								$elm$html$Html$div,
 								_List_fromArray(
 									[
+										$elm$html$Html$Attributes$class('top')
+									]),
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$div,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class(
+												'dropdown-menu ' + (model.dropMenu ? '' : 'overflow-y-hidden'))
+											]),
+										_List_fromArray(
+											[
+												A2(
+												$elm$html$Html$span,
+												_List_fromArray(
+													[
+														$elm$html$Html$Events$onClick(
+														$author$project$Model$DropMenu(!model.dropMenu))
+													]),
+												_List_fromArray(
+													[
+														$elm$html$Html$text(
+														function () {
+															var _v0 = model.gameMode;
+															switch (_v0.$) {
+																case 'Friend':
+																	return 'Against a friend';
+																case 'Easy':
+																	return 'Easy';
+																case 'Medium':
+																	return 'Medium';
+																case 'Hard':
+																	return 'Hard';
+																default:
+																	return 'Impossible';
+															}
+														}())
+													])),
+												A2(
+												$elm$html$Html$div,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('options')
+													]),
+												_List_fromArray(
+													[
+														function () {
+														var _v1 = model.gameMode;
+														if (_v1.$ === 'Friend') {
+															return A2(
+																$elm$html$Html$div,
+																_List_fromArray(
+																	[
+																		$elm$html$Html$Attributes$class('option')
+																	]),
+																_List_fromArray(
+																	[
+																		A2(
+																		$elm$html$Html$div,
+																		_List_fromArray(
+																			[
+																				$elm$html$Html$Attributes$class('checkmark')
+																			]),
+																		_List_fromArray(
+																			[
+																				A2($author$project$Assets$Selected$selectedSvg, '#000000', 0.5)
+																			])),
+																		A2(
+																		$elm$html$Html$span,
+																		_List_fromArray(
+																			[
+																				$elm$html$Html$Attributes$class('font-bold'),
+																				$elm$html$Html$Events$onClick(
+																				$author$project$Model$ChangeMode($author$project$Model$Friend))
+																			]),
+																		_List_fromArray(
+																			[
+																				$elm$html$Html$text('Against a Friend')
+																			]))
+																	]));
+														} else {
+															return A2(
+																$elm$html$Html$div,
+																_List_fromArray(
+																	[
+																		$elm$html$Html$Attributes$class('pl-7')
+																	]),
+																_List_fromArray(
+																	[
+																		A2(
+																		$elm$html$Html$span,
+																		_List_fromArray(
+																			[
+																				$elm$html$Html$Events$onClick(
+																				$author$project$Model$ChangeMode($author$project$Model$Friend))
+																			]),
+																		_List_fromArray(
+																			[
+																				$elm$html$Html$text('Against a Friend')
+																			]))
+																	]));
+														}
+													}(),
+														function () {
+														var _v2 = model.gameMode;
+														if (_v2.$ === 'Easy') {
+															return A2(
+																$elm$html$Html$div,
+																_List_fromArray(
+																	[
+																		$elm$html$Html$Attributes$class('option')
+																	]),
+																_List_fromArray(
+																	[
+																		A2(
+																		$elm$html$Html$div,
+																		_List_fromArray(
+																			[
+																				$elm$html$Html$Attributes$class('checkmark')
+																			]),
+																		_List_fromArray(
+																			[
+																				A2($author$project$Assets$Selected$selectedSvg, '#000000', 0.5)
+																			])),
+																		A2(
+																		$elm$html$Html$span,
+																		_List_fromArray(
+																			[
+																				$elm$html$Html$Attributes$class('font-bold'),
+																				$elm$html$Html$Events$onClick(
+																				$author$project$Model$ChangeMode($author$project$Model$Easy))
+																			]),
+																		_List_fromArray(
+																			[
+																				$elm$html$Html$text('Easy')
+																			]))
+																	]));
+														} else {
+															return A2(
+																$elm$html$Html$div,
+																_List_fromArray(
+																	[
+																		$elm$html$Html$Attributes$class('pl-7')
+																	]),
+																_List_fromArray(
+																	[
+																		A2(
+																		$elm$html$Html$span,
+																		_List_fromArray(
+																			[
+																				$elm$html$Html$Events$onClick(
+																				$author$project$Model$ChangeMode($author$project$Model$Easy))
+																			]),
+																		_List_fromArray(
+																			[
+																				$elm$html$Html$text('Easy')
+																			]))
+																	]));
+														}
+													}(),
+														function () {
+														var _v3 = model.gameMode;
+														if (_v3.$ === 'Medium') {
+															return A2(
+																$elm$html$Html$div,
+																_List_fromArray(
+																	[
+																		$elm$html$Html$Attributes$class('option')
+																	]),
+																_List_fromArray(
+																	[
+																		A2(
+																		$elm$html$Html$div,
+																		_List_fromArray(
+																			[
+																				$elm$html$Html$Attributes$class('checkmark')
+																			]),
+																		_List_fromArray(
+																			[
+																				A2($author$project$Assets$Selected$selectedSvg, '#000000', 0.5)
+																			])),
+																		A2(
+																		$elm$html$Html$span,
+																		_List_fromArray(
+																			[
+																				$elm$html$Html$Attributes$class('font-bold'),
+																				$elm$html$Html$Events$onClick(
+																				$author$project$Model$ChangeMode($author$project$Model$Medium))
+																			]),
+																		_List_fromArray(
+																			[
+																				$elm$html$Html$text('Medium')
+																			]))
+																	]));
+														} else {
+															return A2(
+																$elm$html$Html$div,
+																_List_fromArray(
+																	[
+																		$elm$html$Html$Attributes$class('pl-7')
+																	]),
+																_List_fromArray(
+																	[
+																		A2(
+																		$elm$html$Html$span,
+																		_List_fromArray(
+																			[
+																				$elm$html$Html$Events$onClick(
+																				$author$project$Model$ChangeMode($author$project$Model$Medium))
+																			]),
+																		_List_fromArray(
+																			[
+																				$elm$html$Html$text('Medium')
+																			]))
+																	]));
+														}
+													}(),
+														function () {
+														var _v4 = model.gameMode;
+														if (_v4.$ === 'Hard') {
+															return A2(
+																$elm$html$Html$div,
+																_List_fromArray(
+																	[
+																		$elm$html$Html$Attributes$class('option')
+																	]),
+																_List_fromArray(
+																	[
+																		A2(
+																		$elm$html$Html$div,
+																		_List_fromArray(
+																			[
+																				$elm$html$Html$Attributes$class('checkmark')
+																			]),
+																		_List_fromArray(
+																			[
+																				A2($author$project$Assets$Selected$selectedSvg, '#000000', 0.5)
+																			])),
+																		A2(
+																		$elm$html$Html$span,
+																		_List_fromArray(
+																			[
+																				$elm$html$Html$Attributes$class('font-bold'),
+																				$elm$html$Html$Events$onClick(
+																				$author$project$Model$ChangeMode($author$project$Model$Hard))
+																			]),
+																		_List_fromArray(
+																			[
+																				$elm$html$Html$text('Hard')
+																			]))
+																	]));
+														} else {
+															return A2(
+																$elm$html$Html$div,
+																_List_fromArray(
+																	[
+																		$elm$html$Html$Attributes$class('pl-7')
+																	]),
+																_List_fromArray(
+																	[
+																		A2(
+																		$elm$html$Html$span,
+																		_List_fromArray(
+																			[
+																				$elm$html$Html$Events$onClick(
+																				$author$project$Model$ChangeMode($author$project$Model$Hard))
+																			]),
+																		_List_fromArray(
+																			[
+																				$elm$html$Html$text('Hard')
+																			]))
+																	]));
+														}
+													}(),
+														function () {
+														var _v5 = model.gameMode;
+														if (_v5.$ === 'Impossible') {
+															return A2(
+																$elm$html$Html$div,
+																_List_fromArray(
+																	[
+																		$elm$html$Html$Attributes$class('option')
+																	]),
+																_List_fromArray(
+																	[
+																		A2(
+																		$elm$html$Html$div,
+																		_List_fromArray(
+																			[
+																				$elm$html$Html$Attributes$class('checkmark')
+																			]),
+																		_List_fromArray(
+																			[
+																				A2($author$project$Assets$Selected$selectedSvg, '#000000', 0.5)
+																			])),
+																		A2(
+																		$elm$html$Html$span,
+																		_List_fromArray(
+																			[
+																				$elm$html$Html$Attributes$class('font-bold'),
+																				$elm$html$Html$Events$onClick(
+																				$author$project$Model$ChangeMode($author$project$Model$Impossible))
+																			]),
+																		_List_fromArray(
+																			[
+																				$elm$html$Html$text('Impossible')
+																			]))
+																	]));
+														} else {
+															return A2(
+																$elm$html$Html$div,
+																_List_fromArray(
+																	[
+																		$elm$html$Html$Attributes$class('pl-7')
+																	]),
+																_List_fromArray(
+																	[
+																		A2(
+																		$elm$html$Html$span,
+																		_List_fromArray(
+																			[
+																				$elm$html$Html$Events$onClick(
+																				$author$project$Model$ChangeMode($author$project$Model$Impossible))
+																			]),
+																		_List_fromArray(
+																			[
+																				$elm$html$Html$text('Impossible')
+																			]))
+																	]));
+														}
+													}()
+													]))
+											])),
+										A2(
+										$elm$html$Html$div,
+										_List_Nil,
+										_List_fromArray(
+											[
+												$elm$html$Html$text('share')
+											]))
+									])),
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
 										$elm$html$Html$Attributes$class('difficulty')
 									]),
 								_List_Nil),
@@ -6480,8 +6991,8 @@ var $author$project$Main$view = function (model) {
 											[
 												$elm$html$Html$Attributes$class(
 												'label' + function () {
-													var _v0 = model.currentPlayer;
-													if (_v0.$ === 'Player1') {
+													var _v6 = model.currentPlayer;
+													if (_v6.$ === 'Player1') {
 														return ' selected';
 													} else {
 														return '';
@@ -6489,8 +7000,8 @@ var $author$project$Main$view = function (model) {
 												}()),
 												$elm$html$Html$Events$onClick(
 												function () {
-													var _v1 = model.gameState;
-													if (_v1.$ === 'Beginning') {
+													var _v7 = model.gameState;
+													if (_v7.$ === 'Beginning') {
 														return $author$project$Model$SelectPlayer($author$project$Model$Player1);
 													} else {
 														return $author$project$Model$DoNothing;
@@ -6507,8 +7018,8 @@ var $author$project$Main$view = function (model) {
 														$elm$html$Html$text('X')
 													])),
 												function () {
-												var _v2 = model.crossesWon;
-												if (!_v2) {
+												var _v8 = model.crossesWon;
+												if (!_v8) {
 													return A2(
 														$elm$html$Html$span,
 														_List_Nil,
@@ -6534,8 +7045,8 @@ var $author$project$Main$view = function (model) {
 											[
 												$elm$html$Html$Attributes$class(
 												'label' + function () {
-													var _v3 = model.currentPlayer;
-													if (_v3.$ === 'Player2') {
+													var _v9 = model.currentPlayer;
+													if (_v9.$ === 'Player2') {
 														return ' selected';
 													} else {
 														return '';
@@ -6543,8 +7054,8 @@ var $author$project$Main$view = function (model) {
 												}()),
 												$elm$html$Html$Events$onClick(
 												function () {
-													var _v4 = model.gameState;
-													if (_v4.$ === 'Beginning') {
+													var _v10 = model.gameState;
+													if (_v10.$ === 'Beginning') {
 														return $author$project$Model$SelectPlayer($author$project$Model$Player2);
 													} else {
 														return $author$project$Model$DoNothing;
@@ -6561,8 +7072,8 @@ var $author$project$Main$view = function (model) {
 														$elm$html$Html$text('O')
 													])),
 												function () {
-												var _v5 = model.noughtsWon;
-												if (!_v5) {
+												var _v11 = model.noughtsWon;
+												if (!_v11) {
 													return A2(
 														$elm$html$Html$span,
 														_List_Nil,
@@ -6593,8 +7104,8 @@ var $author$project$Main$view = function (model) {
 									[
 										$elm$html$Html$text(
 										function () {
-											var _v6 = model.gameState;
-											switch (_v6.$) {
+											var _v12 = model.gameState;
+											switch (_v12.$) {
 												case 'OnGoing':
 													return $author$project$Model$fillSquare(
 														$elm$core$Maybe$Just(model.currentPlayer)) + ' Turn';
@@ -6607,8 +7118,8 @@ var $author$project$Main$view = function (model) {
 									]))
 							])),
 						function () {
-						var _v7 = model.gameState;
-						switch (_v7.$) {
+						var _v13 = model.gameState;
+						switch (_v13.$) {
 							case 'Draw':
 								return A2(
 									$elm$html$Html$div,
@@ -6645,8 +7156,8 @@ var $author$project$Main$view = function (model) {
 													$elm$html$Html$text(
 													$author$project$Model$fillSquare(
 														function () {
-															var _v8 = model.currentPlayer;
-															if (_v8.$ === 'Player1') {
+															var _v14 = model.currentPlayer;
+															if (_v14.$ === 'Player1') {
 																return $elm$core$Maybe$Just($author$project$Model$Player2);
 															} else {
 																return $elm$core$Maybe$Just($author$project$Model$Player1);
@@ -6670,8 +7181,8 @@ var $author$project$Main$view = function (model) {
 							[
 								$elm$html$Html$Attributes$class(
 								'board' + function () {
-									var _v9 = model.gameState;
-									switch (_v9.$) {
+									var _v15 = model.gameState;
+									switch (_v15.$) {
 										case 'OnGoing':
 											return '';
 										case 'Beginning':
@@ -6707,8 +7218,8 @@ var $author$project$Main$view = function (model) {
 													}
 												}()),
 												function () {
-												var _v11 = model.gameState;
-												switch (_v11.$) {
+												var _v17 = model.gameState;
+												switch (_v17.$) {
 													case 'OnGoing':
 														return $elm$html$Html$Events$onClick(
 															$author$project$Model$MarkSquare(i));
@@ -6747,9 +7258,9 @@ var $author$project$Main$view = function (model) {
 									]))
 							])),
 						function () {
-						var _v12 = model.errMsg;
-						if (_v12.$ === 'Just') {
-							var str = _v12.a;
+						var _v18 = model.errMsg;
+						if (_v18.$ === 'Just') {
+							var str = _v18.a;
 							return A2(
 								$elm$html$Html$div,
 								_List_fromArray(

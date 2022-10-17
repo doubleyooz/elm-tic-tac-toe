@@ -32,7 +32,7 @@ bestMoveRequest board currentPlayer =
     Http.post
         { url = bestMoveURL
         , body = Http.jsonBody (bestMoveEncoder board currentPlayer)
-        , expect = Http.expectJson IsEndState bestMoveDecoder
+        , expect = Http.expectJson BestMove bestMoveDecoder
         }
 
 
@@ -176,6 +176,13 @@ update msg model =
             , Cmd.none
             )
 
+        ChangeMode mode ->
+            ( { model
+                | gameMode = mode
+              }
+            , Cmd.none
+            )
+
         MarkSquare id ->
             case getElementByIndex model.board id of
                 Just val ->
@@ -209,6 +216,13 @@ update msg model =
 
                 Nothing ->
                     ( model, Cmd.none )
+
+        DropMenu state ->
+            ( { model
+                | dropMenu = state
+              }
+            , Cmd.none
+            )
 
         BestMove (Ok res) ->
             case getElementByIndex model.board res.data of
