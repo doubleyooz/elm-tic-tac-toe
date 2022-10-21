@@ -6332,6 +6332,7 @@ var $author$project$Update$isEndStateRequest = function (board) {
 			url: $author$project$Env$finalStateURL
 		});
 };
+var $elm$core$Basics$not = _Basics_not;
 var $elm$core$Debug$todo = _Debug_todo;
 var $author$project$Update$update = F2(
 	function (msg, model) {
@@ -6342,8 +6343,8 @@ var $author$project$Update$update = F2(
 				if (msg.a.$ === 'Ok') {
 					var res = msg.a.a;
 					var nextPlayer = function () {
-						var _v6 = model.currentPlayer;
-						if (_v6.$ === 'Player2') {
+						var _v9 = model.currentPlayer;
+						if (_v9.$ === 'Player2') {
 							return $author$project$Model$Player1;
 						} else {
 							return $author$project$Model$Player2;
@@ -6392,7 +6393,22 @@ var $author$project$Update$update = F2(
 								if (_v5.$ === 'Friend') {
 									return $elm$core$Platform$Cmd$none;
 								} else {
-									return A2($author$project$Update$bestMoveRequest, model.board, nextPlayer);
+									var _v6 = model.selectedPlayer;
+									if (_v6.$ === 'Player1') {
+										var _v7 = model.currentPlayer;
+										if (_v7.$ === 'Player1') {
+											return $elm$core$Platform$Cmd$none;
+										} else {
+											return A2($author$project$Update$bestMoveRequest, model.board, nextPlayer);
+										}
+									} else {
+										var _v8 = model.currentPlayer;
+										if (_v8.$ === 'Player1') {
+											return $elm$core$Platform$Cmd$none;
+										} else {
+											return A2($author$project$Update$bestMoveRequest, model.board, nextPlayer);
+										}
+									}
 								}
 							} else {
 								return $elm$core$Platform$Cmd$none;
@@ -6445,13 +6461,13 @@ var $author$project$Update$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{gameMode: mode}),
+						{dropMenu: !model.dropMenu, gameMode: mode}),
 					$elm$core$Platform$Cmd$none);
 			case 'MarkSquare':
 				var id = msg.a;
-				var _v8 = A2($author$project$Utils$getElementByIndex, model.board, id);
-				if (_v8.$ === 'Just') {
-					var val = _v8.a;
+				var _v11 = A2($author$project$Utils$getElementByIndex, model.board, id);
+				if (_v11.$ === 'Just') {
+					var val = _v11.a;
 					if (val.$ === 'Nothing') {
 						var newBoard = A2(
 							$elm$core$List$indexedMap,
@@ -6486,9 +6502,9 @@ var $author$project$Update$update = F2(
 			default:
 				if (msg.a.$ === 'Ok') {
 					var res = msg.a.a;
-					var _v11 = A2($author$project$Utils$getElementByIndex, model.board, res.data);
-					if (_v11.$ === 'Just') {
-						var val = _v11.a;
+					var _v14 = A2($author$project$Utils$getElementByIndex, model.board, res.data);
+					if (_v14.$ === 'Just') {
+						var val = _v14.a;
 						if (val.$ === 'Nothing') {
 							var newBoard = A2(
 								$elm$core$List$indexedMap,
@@ -6517,8 +6533,8 @@ var $author$project$Update$update = F2(
 					return _Debug_todo(
 						'Update',
 						{
-							start: {line: 262, column: 13},
-							end: {line: 262, column: 23}
+							start: {line: 278, column: 13},
+							end: {line: 278, column: 23}
 						})('branch \'BestMove (Err _)\' not implemented');
 				}
 		}
@@ -6550,7 +6566,6 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
 var $elm$html$Html$div = _VirtualDom_node('div');
-var $elm$core$Basics$not = _Basics_not;
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 'Normal', a: a};
 };

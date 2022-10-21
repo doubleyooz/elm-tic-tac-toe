@@ -131,7 +131,22 @@ update msg model =
 
                         _ ->
                             {- Put call the engine logic here -}
-                            bestMoveRequest model.board nextPlayer
+                            case model.selectedPlayer of
+                                Player1 ->
+                                    case model.currentPlayer of
+                                        Player1 ->
+                                            Cmd.none
+
+                                        _ ->
+                                            bestMoveRequest model.board nextPlayer
+
+                                Player2 ->
+                                    case model.currentPlayer of
+                                        Player1 ->
+                                            Cmd.none
+
+                                        _ ->
+                                            bestMoveRequest model.board nextPlayer
 
                 _ ->
                     Cmd.none
@@ -179,6 +194,7 @@ update msg model =
         ChangeMode mode ->
             ( { model
                 | gameMode = mode
+                , dropMenu = not model.dropMenu
               }
             , Cmd.none
             )
