@@ -106,7 +106,12 @@ update msg model =
                         _ ->
                             Win
                 , currentPlayer =
-                    nextPlayer
+                    case res.data + 1 of
+                        4 ->
+                            nextPlayer
+
+                        _ ->
+                            model.currentPlayer
                 , crossesWon =
                     case res.data + 1 of
                         2 ->
@@ -134,7 +139,7 @@ update msg model =
                             case model.selectedPlayer of
                                 Player1 ->
                                     case model.currentPlayer of
-                                        Player1 ->
+                                        Player2 ->
                                             Cmd.none
 
                                         _ ->
@@ -178,7 +183,13 @@ update msg model =
             ( { model
                 | board = [ Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing ]
                 , gameState = Beginning
-                , currentPlayer = Player1
+                , currentPlayer =
+                    case model.gameMode of
+                        Friend ->
+                            Player1
+
+                        _ ->
+                            model.currentPlayer
                 , errMsg = Nothing
               }
             , Cmd.none
@@ -186,7 +197,14 @@ update msg model =
 
         SelectPlayer player ->
             ( { model
-                | currentPlayer = player
+                | selectedPlayer = player
+                , currentPlayer =
+                    case model.gameState of
+                        Beginning ->
+                            player
+
+                        _ ->
+                            model.currentPlayer
               }
             , Cmd.none
             )
@@ -201,36 +219,31 @@ update msg model =
 
         MarkSquare id ->
             case getElementByIndex model.board id of
-                Just val ->
-                    case val of
-                        Nothing ->
-                            let
-                                newBoard =
-                                    List.indexedMap
-                                        (\i x ->
-                                            case x of
-                                                Just player ->
-                                                    Just player
+                Just Nothing ->
+                    let
+                        newBoard =
+                            List.indexedMap
+                                (\i x ->
+                                    case x of
+                                        Just player ->
+                                            Just player
 
-                                                Nothing ->
-                                                    if i == id then
-                                                        Just model.currentPlayer
+                                        Nothing ->
+                                            if i == id then
+                                                Just model.currentPlayer
 
-                                                    else
-                                                        Nothing
-                                        )
-                                        model.board
-                            in
-                            ( { model
-                                | board = newBoard
-                              }
-                            , isEndStateRequest newBoard
-                            )
+                                            else
+                                                Nothing
+                                )
+                                model.board
+                    in
+                    ( { model
+                        | board = newBoard
+                      }
+                    , isEndStateRequest newBoard
+                    )
 
-                        _ ->
-                            ( model, Cmd.none )
-
-                Nothing ->
+                _ ->
                     ( model, Cmd.none )
 
         DropMenu state ->
@@ -242,36 +255,31 @@ update msg model =
 
         BestMove (Ok res) ->
             case getElementByIndex model.board res.data of
-                Just val ->
-                    case val of
-                        Nothing ->
-                            let
-                                newBoard =
-                                    List.indexedMap
-                                        (\i x ->
-                                            case x of
-                                                Just player ->
-                                                    Just player
+                Just Nothing ->
+                    let
+                        newBoard =
+                            List.indexedMap
+                                (\i x ->
+                                    case x of
+                                        Just player ->
+                                            Just player
 
-                                                Nothing ->
-                                                    if i == res.data then
-                                                        Just model.currentPlayer
+                                        Nothing ->
+                                            if i == res.data then
+                                                Just model.currentPlayer
 
-                                                    else
-                                                        Nothing
-                                        )
-                                        model.board
-                            in
-                            ( { model
-                                | board = newBoard
-                              }
-                            , isEndStateRequest newBoard
-                            )
+                                            else
+                                                Nothing
+                                )
+                                model.board
+                    in
+                    ( { model
+                        | board = newBoard
+                      }
+                    , isEndStateRequest newBoard
+                    )
 
-                        _ ->
-                            ( model, Cmd.none )
-
-                Nothing ->
+                _ ->
                     ( model, Cmd.none )
 
         BestMove (Err _) ->

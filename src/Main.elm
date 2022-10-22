@@ -311,6 +311,32 @@ view model =
                     model.board
                 )
             , div [ class "reset" ] [ span [ onClick Reset ] [ text "Restart game" ] ]
+            , div []
+                [ text
+                    (case model.selectedPlayer of
+                        Player1 ->
+                            "Player 1"
+
+                        Player2 ->
+                            "Player 2"
+                    )
+                ]
+            , div []
+                [ text
+                    (case model.gameState of
+                        Beginning ->
+                            "Beginning"
+
+                        OnGoing ->
+                            "OnGoing"
+
+                        Win ->
+                            "Win"
+
+                        Draw ->
+                            "Draw"
+                    )
+                ]
             , case model.errMsg of
                 Just str ->
                     div [ class "error" ] [ text str ]

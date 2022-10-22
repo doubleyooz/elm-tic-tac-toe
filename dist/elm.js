@@ -6343,8 +6343,8 @@ var $author$project$Update$update = F2(
 				if (msg.a.$ === 'Ok') {
 					var res = msg.a.a;
 					var nextPlayer = function () {
-						var _v9 = model.currentPlayer;
-						if (_v9.$ === 'Player2') {
+						var _v10 = model.currentPlayer;
+						if (_v10.$ === 'Player2') {
 							return $author$project$Model$Player1;
 						} else {
 							return $author$project$Model$Player2;
@@ -6362,11 +6362,18 @@ var $author$project$Update$update = F2(
 										return model.crossesWon;
 									}
 								}(),
-								currentPlayer: nextPlayer,
+								currentPlayer: function () {
+									var _v2 = res.data + 1;
+									if (_v2 === 4) {
+										return nextPlayer;
+									} else {
+										return model.currentPlayer;
+									}
+								}(),
 								errMsg: $elm$core$Maybe$Just(''),
 								gameState: function () {
-									var _v2 = res.data + 1;
-									switch (_v2) {
+									var _v3 = res.data + 1;
+									switch (_v3) {
 										case 0:
 											return model.gameState;
 										case 1:
@@ -6378,8 +6385,8 @@ var $author$project$Update$update = F2(
 									}
 								}(),
 								noughtsWon: function () {
-									var _v3 = res.data + 1;
-									if (_v3 === 3) {
+									var _v4 = res.data + 1;
+									if (_v4 === 3) {
 										return model.noughtsWon + 1;
 									} else {
 										return model.noughtsWon;
@@ -6387,23 +6394,23 @@ var $author$project$Update$update = F2(
 								}()
 							}),
 						function () {
-							var _v4 = res.data + 1;
-							if (_v4 === 4) {
-								var _v5 = model.gameMode;
-								if (_v5.$ === 'Friend') {
+							var _v5 = res.data + 1;
+							if (_v5 === 4) {
+								var _v6 = model.gameMode;
+								if (_v6.$ === 'Friend') {
 									return $elm$core$Platform$Cmd$none;
 								} else {
-									var _v6 = model.selectedPlayer;
-									if (_v6.$ === 'Player1') {
-										var _v7 = model.currentPlayer;
-										if (_v7.$ === 'Player1') {
+									var _v7 = model.selectedPlayer;
+									if (_v7.$ === 'Player1') {
+										var _v8 = model.currentPlayer;
+										if (_v8.$ === 'Player2') {
 											return $elm$core$Platform$Cmd$none;
 										} else {
 											return A2($author$project$Update$bestMoveRequest, model.board, nextPlayer);
 										}
 									} else {
-										var _v8 = model.currentPlayer;
-										if (_v8.$ === 'Player1') {
+										var _v9 = model.currentPlayer;
+										if (_v9.$ === 'Player1') {
 											return $elm$core$Platform$Cmd$none;
 										} else {
 											return A2($author$project$Update$bestMoveRequest, model.board, nextPlayer);
@@ -6444,7 +6451,14 @@ var $author$project$Update$update = F2(
 						{
 							board: _List_fromArray(
 								[$elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing, $elm$core$Maybe$Nothing]),
-							currentPlayer: $author$project$Model$Player1,
+							currentPlayer: function () {
+								var _v12 = model.gameMode;
+								if (_v12.$ === 'Friend') {
+									return $author$project$Model$Player1;
+								} else {
+									return model.currentPlayer;
+								}
+							}(),
 							errMsg: $elm$core$Maybe$Nothing,
 							gameState: $author$project$Model$Beginning
 						}),
@@ -6454,7 +6468,17 @@ var $author$project$Update$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{currentPlayer: player}),
+						{
+							currentPlayer: function () {
+								var _v13 = model.gameState;
+								if (_v13.$ === 'Beginning') {
+									return player;
+								} else {
+									return model.currentPlayer;
+								}
+							}(),
+							selectedPlayer: player
+						}),
 					$elm$core$Platform$Cmd$none);
 			case 'ChangeMode':
 				var mode = msg.a;
@@ -6465,30 +6489,26 @@ var $author$project$Update$update = F2(
 					$elm$core$Platform$Cmd$none);
 			case 'MarkSquare':
 				var id = msg.a;
-				var _v11 = A2($author$project$Utils$getElementByIndex, model.board, id);
-				if (_v11.$ === 'Just') {
-					var val = _v11.a;
-					if (val.$ === 'Nothing') {
-						var newBoard = A2(
-							$elm$core$List$indexedMap,
-							F2(
-								function (i, x) {
-									if (x.$ === 'Just') {
-										var player = x.a;
-										return $elm$core$Maybe$Just(player);
-									} else {
-										return _Utils_eq(i, id) ? $elm$core$Maybe$Just(model.currentPlayer) : $elm$core$Maybe$Nothing;
-									}
-								}),
-							model.board);
-						return _Utils_Tuple2(
-							_Utils_update(
-								model,
-								{board: newBoard}),
-							$author$project$Update$isEndStateRequest(newBoard));
-					} else {
-						return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-					}
+				var _v14 = A2($author$project$Utils$getElementByIndex, model.board, id);
+				if ((_v14.$ === 'Just') && (_v14.a.$ === 'Nothing')) {
+					var _v15 = _v14.a;
+					var newBoard = A2(
+						$elm$core$List$indexedMap,
+						F2(
+							function (i, x) {
+								if (x.$ === 'Just') {
+									var player = x.a;
+									return $elm$core$Maybe$Just(player);
+								} else {
+									return _Utils_eq(i, id) ? $elm$core$Maybe$Just(model.currentPlayer) : $elm$core$Maybe$Nothing;
+								}
+							}),
+						model.board);
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{board: newBoard}),
+						$author$project$Update$isEndStateRequest(newBoard));
 				} else {
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
@@ -6502,30 +6522,26 @@ var $author$project$Update$update = F2(
 			default:
 				if (msg.a.$ === 'Ok') {
 					var res = msg.a.a;
-					var _v14 = A2($author$project$Utils$getElementByIndex, model.board, res.data);
-					if (_v14.$ === 'Just') {
-						var val = _v14.a;
-						if (val.$ === 'Nothing') {
-							var newBoard = A2(
-								$elm$core$List$indexedMap,
-								F2(
-									function (i, x) {
-										if (x.$ === 'Just') {
-											var player = x.a;
-											return $elm$core$Maybe$Just(player);
-										} else {
-											return _Utils_eq(i, res.data) ? $elm$core$Maybe$Just(model.currentPlayer) : $elm$core$Maybe$Nothing;
-										}
-									}),
-								model.board);
-							return _Utils_Tuple2(
-								_Utils_update(
-									model,
-									{board: newBoard}),
-								$author$project$Update$isEndStateRequest(newBoard));
-						} else {
-							return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-						}
+					var _v17 = A2($author$project$Utils$getElementByIndex, model.board, res.data);
+					if ((_v17.$ === 'Just') && (_v17.a.$ === 'Nothing')) {
+						var _v18 = _v17.a;
+						var newBoard = A2(
+							$elm$core$List$indexedMap,
+							F2(
+								function (i, x) {
+									if (x.$ === 'Just') {
+										var player = x.a;
+										return $elm$core$Maybe$Just(player);
+									} else {
+										return _Utils_eq(i, res.data) ? $elm$core$Maybe$Just(model.currentPlayer) : $elm$core$Maybe$Nothing;
+									}
+								}),
+							model.board);
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{board: newBoard}),
+							$author$project$Update$isEndStateRequest(newBoard));
 					} else {
 						return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 					}
@@ -6533,8 +6549,8 @@ var $author$project$Update$update = F2(
 					return _Debug_todo(
 						'Update',
 						{
-							start: {line: 278, column: 13},
-							end: {line: 278, column: 23}
+							start: {line: 286, column: 13},
+							end: {line: 286, column: 23}
 						})('branch \'BestMove (Err _)\' not implemented');
 				}
 		}
@@ -7272,10 +7288,45 @@ var $author$project$Main$view = function (model) {
 										$elm$html$Html$text('Restart game')
 									]))
 							])),
+						A2(
+						$elm$html$Html$div,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text(
+								function () {
+									var _v18 = model.selectedPlayer;
+									if (_v18.$ === 'Player1') {
+										return 'Player 1';
+									} else {
+										return 'Player 2';
+									}
+								}())
+							])),
+						A2(
+						$elm$html$Html$div,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text(
+								function () {
+									var _v19 = model.gameState;
+									switch (_v19.$) {
+										case 'Beginning':
+											return 'Beginning';
+										case 'OnGoing':
+											return 'OnGoing';
+										case 'Win':
+											return 'Win';
+										default:
+											return 'Draw';
+									}
+								}())
+							])),
 						function () {
-						var _v18 = model.errMsg;
-						if (_v18.$ === 'Just') {
-							var str = _v18.a;
+						var _v20 = model.errMsg;
+						if (_v20.$ === 'Just') {
+							var str = _v20.a;
 							return A2(
 								$elm$html$Html$div,
 								_List_fromArray(
